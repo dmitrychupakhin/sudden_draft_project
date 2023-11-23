@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link type="text/css" href="{% static 'main/css/main.css' %}" rel="stylesheet">
+<title>SuddenDraft | Main</title>
+{% endblock head %}
+
+{% block content %}
+<div class="content-head">
+    <div class="content-head__text">Welcome to SuddenDraft.</div>
+</div>
+<div class="content-toolbar" onclick="new_draft_button()">
+    <div class="content-toolbar__item">
+        New Draft
+    </div>
+</div>
+<div class="content-drafts">
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+    <div class="content-drafts-item">
+        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
+        <div class="content-drafts-item__name">Project</div>
+    </div>
+</div>
+<script>
+    function new_draft_button() {
+        // Здесь указывается URL страницы, на которую вы хотите перейти
+        var targetPageUrl = "{% url 'new_draft' %}";
+        // Выполняем переход на новую страницу
+        window.location.href = targetPageUrl;
+    }
+</script>
+{% endblock content %}
