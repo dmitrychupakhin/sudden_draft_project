@@ -1,13 +1,13 @@
 from django.db import models
 from operator import attrgetter
-from django.contrib.auth.models import User
+from account.models import SuddenDraftUser
 
 class Draft(models.Model):
     name = models.CharField(max_length=100)
     width = models.IntegerField(default=1920)
     height = models.IntegerField(default=1080)
     is_public = models.BooleanField(default=False)
-    users = models.ManyToManyField(User, related_name='packages')
+    users = models.ManyToManyField(SuddenDraftUser, related_name='packages')
     
     picture_objects = models.ManyToManyField('PictureObject', related_name='picture_objects')
     text_objects = models.ManyToManyField('TextObject', related_name='text_objects')

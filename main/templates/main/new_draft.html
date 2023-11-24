@@ -2,15 +2,16 @@
 {% load static %}
 
 {% block head %}
-<link type="text/css" href="{% static 'main/css/main.css' %}" rel="stylesheet">
+<link type="text/css" href="{% static 'main/css/new_draft.css' %}" rel="stylesheet">
 <title>SuddenDraft | New Draft</title>
 {% endblock head %}
 
 {% block content %}
-<div class="content-head">
-    <div class="content-head__text">New Draft</div>
-</div>
-<div class="content-form">
-
-</div>
+<form method="POST" class="content-form">
+    <div class="form-head">New Draft</div>
+    {% csrf_token %}
+    {{ form.name }}
+    <div class="form-input">Публичный? {{ form.is_public }}</div>
+    <button class="form-button" type="submit">Создать</button>
+</form>
 {% endblock content %}

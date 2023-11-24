@@ -16,60 +16,18 @@
     </div>
 </div>
 <div class="content-drafts">
-    <div class="content-drafts-item">
+    {% for draft in drafts %}
+    <div class="content-drafts-item" onclick="draft_editor('{% url 'draft_editor' draft.pk %}')">
         <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
+        <div class="content-drafts-item__name">{{draft.name}}</div>
     </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
-    <div class="content-drafts-item">
-        <img src="{% static 'img/background.jpg' %}" class="content-drafts-item__img"></img>
-        <div class="content-drafts-item__name">Project</div>
-    </div>
+    {% endfor %}
 </div>
 <script>
+    function draft_editor(targetPageUrl) {
+        // Выполняем переход на новую страницу
+        window.location.href = targetPageUrl;
+    }
     function new_draft_button() {
         // Здесь указывается URL страницы, на которую вы хотите перейти
         var targetPageUrl = "{% url 'new_draft' %}";

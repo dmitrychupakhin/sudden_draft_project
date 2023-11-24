@@ -1,0 +1,96 @@
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0px 60px;
+    font-size: 20px;
+}
+
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #ffffff;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232300;
+    font-size: 20px !important;
+}
+.form-input{
+    
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #ffffff;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232300;
+    font-size: 20px !important;
+    border-bottom: 1px solid rgba(46, 49, 51, 0.263);
+    margin-bottom: 30px;
+}
+
+.panel-head{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.panel{
+    font-size: 20px;
+    backdrop-filter: blur(15px);
+        background: linear-gradient(rgba(42, 42, 42, 0), rgba(16, 75, 83, 0.2), rgba(16, 75, 83, 0.2));
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(82, 93, 100, 0.251);
+}
+
+.form-button{
+    font-size: 20px;
+    background: linear-gradient(to right, rgba(16, 75, 83, 0.2) 50%, rgba(205, 128, 50, 0.2), rgba(16, 75, 83, 0.2));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(46, 49, 51, 0.263);
+    padding: 10px;
+    border-radius: 20px;
+    color: white;
+}
+
+.my-form{
+        display: flex;
+        flex-direction: column;
+            justify-content: center;
+}
+
+.form-register{
+    display: flex;
+    justify-content: center;
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.form-a{
+    display: flex;
+    margin-left: 10px;
+    color: white;
+    text-decoration: underline;
+}
+
+.error-animation {
+    animation: errorHighlight 2s;
+}
+
+/* Определяем анимацию */
+@keyframes errorHighlight {
+    0% {
+        border-bottom: 1px solid #c92929;
+    }
+
+    50% {
+        border-bottom: 1px solid #c92929;
+    }
+
+    100% {
+        border-bottom: 1px solid rgba(46, 49, 51, 0.263);
+    }
+}

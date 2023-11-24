@@ -1,0 +1,74 @@
+.content {
+    font-size: 20px;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    grid-template-columns: auto 1fr;
+    grid-gap: 20px;
+    margin: 0px 60px;
+    padding-top: 80px;
+}
+
+.content-head {
+    grid-area: content-head;
+    display: flex;
+    justify-content: center;
+    height: 40px;
+}
+
+.content-head__text {
+    color: white;
+    padding: 10px;
+    border-bottom: 1px solid rgba(82, 93, 100, 0.251);
+    backdrop-filter: blur(15px);
+}
+
+.content-form{
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(rgba(42, 42, 42, 0), rgba(16, 75, 83, 0.2), rgba(16, 75, 83, 0.2));
+    border-radius: 20px;
+    padding: 20px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(82, 93, 100, 0.251);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #ffffff;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232300;
+    font-size: 20px !important;
+}
+
+input {
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #ffffff;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232300;
+    font-size: 20px !important;
+    border-bottom: 1px solid rgba(46, 49, 51, 0.263);
+    margin-bottom: 30px;
+}
+
+.form-head{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+        font-weight: 700;
+}
+
+.form-button {
+    font-size: 20px;
+    background: linear-gradient(to right, rgba(16, 75, 83, 0.2) 50%, rgba(205, 128, 50, 0.2), rgba(16, 75, 83, 0.2));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(46, 49, 51, 0.263);
+    padding: 10px;
+    border-radius: 20px;
+    color: white;
+}

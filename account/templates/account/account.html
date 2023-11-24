@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link type="text/css" href="{% static 'account/css/account.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block content %}
+<div class="panel">
+    <div class="user-info">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if user.profile_picture %}
+            <img class="user-info__profile-img" src="{{ user.profile_picture.url }}" alt="Current Profile Picture">
+            {% endif %}
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

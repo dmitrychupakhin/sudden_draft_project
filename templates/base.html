@@ -16,7 +16,22 @@
     <div class="wrapper">
         <div class="header">
             <div class="logo" onclick="main()">SuddenDraft</div>
-            <div class="profile"></div>
+            {% if user.is_authenticated %}
+            <div class="profile">
+                <a class="profile__button profile-button" href="{% url 'account' %}">
+                    <div class="profile-button__text">{{ user.username }}</div>
+                </a>
+                <img class="profile__profile-picture" src="{{ MEDIA_URL }}{{ user.profile_picture }}" alt="User Photo">
+                <a class="profile__button profile-button" href="{% url 'logout' %}">
+                    <div class="profile-button__text">Выйти</div>
+                </a>
+            </div>
+            {% else %}
+            <div class="profile">
+                <a class="profile__button" href="{% url 'login' %}">Авторизация</a>
+                <a class="profile__button" href="{% url 'register' %}">Регистрация</a>
+            </div>
+            {% endif %}
         </div>
         <div class="content">
             {% block content %}

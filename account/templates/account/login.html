@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link type="text/css" href="{% static 'account/css/login.css' %}" rel="stylesheet">
+<title>SuddenDraft | Login</title>
+{% endblock head %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-head">Вход SuddenDraft</div>
+    <form method="post" class="my-form">
+        {% csrf_token %}
+        {{ form.username }}
+        {{ form.password }}
+        <button class="form-button" type="submit">Войти</button>
+        <div class="form-register">Нет аккаунта? <a href="{% url 'register' %}" class="form-a">Регистрация</a></div>
+    </form>
+    {% if form.errors %}
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Добавляем класс с анимацией к полям с ошибками
+            $('input').addClass('error-animation');
+
+            // Убираем класс с анимацией через 5 секунд
+            setTimeout(function () {
+                $('input').removeClass('error-animation');
+            }, 2000);
+        });
+    </script>
+    {% endif %}
+</div>
+<script>
+    // Отключение автозаполнения для всех форм на странице
+    document.addEventListener("DOMContentLoaded", function () {
+        var forms = document.getElementsByTagName("form");
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].setAttribute("autocomplete", "off");
+        }
+    });
+</script>
+{% endblock content %}
