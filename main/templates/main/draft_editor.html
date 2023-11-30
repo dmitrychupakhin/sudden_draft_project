@@ -2,6 +2,159 @@
 {% load static %}
 
 {% block head %}
-<link type="text/css" href="{% static 'main/css/main.css' %}" rel="stylesheet">
-<title>SuddenDraft | Main</title>
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200" />
+<link type="text/css" href="{% static 'main/css/draft_editor.css' %}" rel="stylesheet">
+<title>SuddenDraft | Draft Editor</title>
 {% endblock head %}
+
+{% block logo %}
+<div class="x">x</div>{{ draft.name }}
+{% endblock logo %}
+
+{% block content %}
+<div id="backgrounds">
+    <canvas id="style0" height="40px" width="80px" onclick="setBackground(0)"></canvas>
+    <canvas id="style1" height="40px" width="80px" onclick="setBackground(1)"></canvas>
+    <canvas id="style2" height="40px" width="80px" onclick="setBackground(2)"></canvas>
+    <canvas id="style3" height="40px" width="80px" onclick="setBackground(3)"></canvas>
+</div>
+<div id="draw-settings">
+    <div class="draw-settings-style-wrapper">
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button-style"
+            onclick="set_draw_style1(event)">
+            edit
+        </button>
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button"
+            onclick="set_draw_style2(event)">
+            ink_marker
+        </button>
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button"
+            onclick="set_draw_style3(event)">
+            ink_highlighter
+        </button>
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button"
+            onclick="set_draw_style4(event)">
+            brush
+        </button>
+    </div>
+    <div class="draw-settings-color-wrapper1">
+        <button class="material-symbols-outlined draw-settings__color" id="draw-button"
+            style="background-color:rgb(60,64,67);" onclick="set_draw_color(event)"></button>
+        <button class="material-symbols-outlined draw-settings__color" id="draw-button"
+            style="background-color: rgb(25,172,192);" onclick="set_draw_color(event)"></button>
+        <button class="material-symbols-outlined draw-settings__color" id="draw-button"
+            style="background-color:rgb(105,158,62);" onclick="set_draw_color(event)"></button>
+    </div>
+    <div class="draw-settings-color-wrapper2">
+        <button class="material-symbols-outlined draw-settings__color" id="draw-button"
+            style="background-color: rgb(255, 255, 255);" onclick="set_draw_color(event)"></button>
+        <button class="material-symbols-outlined draw-settings__color" id="draw-button"
+            style="background-color:rgb(243,179,42);" onclick="set_draw_color(event)"></button>
+        <button class="material-symbols-outlined draw-settings__color" id="draw-button"
+            style="background-color: rgb(217,69,60);" onclick="set_draw_color(event)"></button>
+    </div>
+
+    </button>
+</div>
+<div class="quick-access-toolbar">
+    <div class="material-symbols-outlined toolbar__item quick-access-toolbar__item">
+        undo
+    </div>
+    <div class="material-symbols-outlined toolbar__item quick-access-toolbar__item">
+        redo
+    </div>
+    <div class="material-symbols-outlined toolbar__item quick-access-toolbar__item">
+        zoom_in
+    </div>
+    <button id="background_button" class="quick-access-toolbar__button background_button"
+        onclick="toggleDropdown(event)">Выбрать фон</button>
+    <button id="clear_button" class="quick-access-toolbar__button">Очистить фрейм</button>
+</div>
+<div class="toolbar">
+    <button class="material-symbols-outlined toolbar__item draw-button" id="toolbar-draw-button"
+        onclick="drawButtonActive(event)">
+        edit
+    </button>
+    <button class="material-symbols-outlined toolbar__item" id="toolbar-eraser-button"
+        onclick="eraserButtonActive(event)">
+        ink_eraser
+    </button>
+    <button class="material-symbols-outlined toolbar__item">
+        open_with
+    </button>
+    <button class="material-symbols-outlined toolbar__item">
+        add_photo_alternate
+    </button>
+    <button class="material-symbols-outlined toolbar__item">
+        circle
+    </button>
+    <button class="material-symbols-outlined toolbar__item">
+        text_fields
+    </button>
+    <button class="material-symbols-outlined toolbar__item">
+        drag_click
+    </button>
+</div>
+<div class="canvas-block">
+    <div class="canvas-block-wrapper"
+        style="height: calc({{ draft.height }}px + 0px); width: calc({{ draft.width }}px + 0px)">
+        {% for layer in layers %}
+        <canvas class="canvas{{ forloop.counter }} canvas-block__item"></canvas>
+        {% endfor %}
+        <canvas class="base-canvas canvas-block__item" id="base-canvas" width="{{ draft.width }}"
+            height="{{ draft.height }}"></canvas>
+        <canvas class="editor-canvas canvas-block__item" id="editor-canvas" width="{{ draft.width }}"
+            height="{{ draft.height }}"></canvas>
+    </div>
+</div>
+
+<script src="{% static 'main/js/erasing.js' %}"></script>
+<script src="{% static 'main/js/drawing.js' %}"></script>
+<script src="{% static 'main/js/draft_editor.js' %}"></script>
+<script>
+
+    const socket = new WebSocket(`ws://${window.location.host}/ws/draft/{{ draft.id }}/`);
+
+    socket.onopen = (event) => {
+        console.log('WebSocket connection opened:', event);
+    };
+
+    socket.onmessage = (event) => {
+        try {
+            var data = JSON.parse(event.data);
+
+            const receivedCoordinates = data.coordinates;
+
+            if (receivedCoordinates) {
+                for (let i = 0; i < receivedCoordinates.length; i++) {
+                    const coordinate = receivedCoordinates[i];
+                    editor_context.clearRect(coordinate.x, coordinate.y, 15, 15);
+                }
+            } else {
+                var x_position = data.x_position;
+                var y_position = data.y_position;
+                var picture_url = data.picture_url;
+
+                var img = new Image();
+
+                if (picture_url) {
+                    img.src = picture_url;
+                    img.onload = function () {
+                        editor_context.drawImage(img, x_position, y_position);
+                    };
+                } else {
+                    console.error('URL изображения не определен.');
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка при парсинге JSON:', error);
+        }
+    }
+
+    socket.onclose = function (event) {
+        console.log('WebSocket connection closed:', event);
+    };
+</script>
+
+{% endblock content %}

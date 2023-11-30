@@ -1,0 +1,225 @@
+body {
+    background-image: none;
+    height: 0;
+    width: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    font-family: 'Cascadia Code', sans-serif;
+    color: black;
+    transition: transform 0.3s ease-out;
+    overflow-x: hidden;
+    background-color: rgb(246, 248, 250);
+    scrollbar-width: thin;
+}
+
+.content{
+    margin: 0px 100px;
+    padding-top: 110px;
+}
+
+.logo{
+
+    color: rgb(207, 207, 207);
+}
+
+.header {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 65px;
+    backdrop-filter: blur(15px);
+    align-items: center;
+    padding: 0px 20px;
+    font-size: 25px;
+    border-bottom: 1px solid rgba(82, 93, 100, 0.251);
+    background-color: white;
+}
+
+.quick-access-toolbar{
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    position: fixed;
+    top: 65px;
+    left: 0;
+    height: 40px;
+    background-color: white;
+    border-bottom: 1px solid rgba(82, 93, 100, 0.251);
+    width: 100vw;
+    padding: 0px 20px;
+    overflow: hidden;
+}
+
+.quick-access-toolbar__item{
+    margin-right: 20px;
+
+}
+
+.quick-access-toolbar__button{
+    height: 80%;
+    padding: 0px 10px;
+    background-color: transparent;
+    border-left: 1px solid rgba(82, 93, 100, 0.251);
+    border-right: 1px solid rgba(82, 93, 100, 0.251);
+    margin-right: 20px;
+}
+
+.quick-access-toolbar__button:hover {
+    background-color: rgb(242, 242, 242);
+}
+
+.quick-access-toolbar__button:active {
+    background-color: rgb(236, 236, 236);
+}
+
+.profile__button {
+    display: flex;
+    align-items: center;
+    color: black;
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+.Sudden{
+    color: lightcoral;
+}
+.Draft{
+    color: lightblue;
+}
+.x{
+    color:rgb(243, 201, 147)
+}
+.toolbar{
+    display: flex;
+    top: 30vh;
+    flex-direction: column;
+    border: 1px solid rgba(82, 93, 100, 0.251);
+    border-radius: 15px;
+    position: fixed;
+    left: 20px;
+    z-index: 1000;
+    background-color: white;
+}
+
+.toolbar__item{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: white;
+}
+
+.toolbar__item:hover{
+    background-color: rgb(242, 242, 242);
+}
+
+.toolbar__item:active{
+    background-color: rgb(236, 236, 236);
+}
+
+.active_button{
+    background-color: rgb(236, 236, 236);
+}
+
+.canvas-block{
+    border: 1px solid rgba(82, 93, 100, 0.251);
+    padding: 10px;
+    height: calc(100vh - 120px);;
+    width: 100%;
+    overflow: auto;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.canvas-block-wrapper{
+    position: relative;
+}
+
+#backgrounds {
+    border-radius: 6px;
+    display: none;
+    position: fixed;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    z-index: 20000;
+    top:105px;
+    left: 200px;
+}
+
+#draw-settings{
+    display: none;
+    border-radius: 15px;
+    position: fixed;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 20000;
+    top: 105px;
+    left: 200px;
+}
+
+.draw-settings__style{
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.draw-settings__style:hover {
+    background-color: rgb(242, 242, 242);
+}
+
+.draw-settings__style:active {
+    background-color: rgb(236, 236, 236);
+}
+
+.draw-settings__stylen {
+    background-color: rgb(236, 236, 236);
+}
+
+.draw-settings__color{
+    background-color: blue;
+    height: 25px;
+    width: 25px;
+    border-radius: 30px;
+    margin: 10px;
+}
+
+.draw-settings-color-wrapper{
+    display: flex;
+}
+
+.canvas-block__item {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+#style0 {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+#style1 {
+    border: 1px solid rgb(218, 233, 249);
+}
+#style2 {
+    border: 1px solid rgb(218, 233, 249);
+}
+#style3 {
+    border: 1px solid rgba(82, 93, 100, 0.251);
+}
+#style4 {
+    border: 1px solid rgb(218, 233, 249);
+}
+#style5 {
+    border: 1px solid rgb(218, 233, 249);
+}

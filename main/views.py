@@ -33,6 +33,11 @@ def new_draft(request):
     return render(request, 'main/new_draft.html', context)
 
 def draft_editor(request, id):
-    context = {}
+    draft = Draft.objects.get(id=id)
+    layers = draft.get_layers()
+    context = {
+        'draft': draft,
+        'layers': layers
+    }
     context['MEDIA_URL'] = settings.MEDIA_URL
     return render(request, 'main/draft_editor.html', context)

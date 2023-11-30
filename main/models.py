@@ -6,15 +6,17 @@ class Draft(models.Model):
     name = models.CharField(max_length=100)
     width = models.IntegerField(default=1920)
     height = models.IntegerField(default=1080)
+    background = models.IntegerField(default=1)
     is_public = models.BooleanField(default=False)
     users = models.ManyToManyField(SuddenDraftUser, related_name='packages')
     
-    picture_objects = models.ManyToManyField('PictureObject', related_name='picture_objects')
-    text_objects = models.ManyToManyField('TextObject', related_name='text_objects')
-    
     def get_layers(self):
-        all_objects = list(self.picture_objects.all()) + list(self.text_objects.all())
+        all_objects = list(self.picture_object.all()) + list(self.text_object.all())
         all_objects = sorted(all_objects, key=attrgetter('order')) 
+        try:
+            all_objects = all_objects + list(self.drawn_object)
+        except:
+            pass
         return all_objects  
     
     def raise_higher(self, object):
@@ -45,17 +47,31 @@ class Draft(models.Model):
         self.picture_objects.add(object)
         self.picture_objects.save()
         self.save()
-
-def get_picture_object_filepath(self, filename):
-	return 'file_picture/' + str(self.pk) + '/' + filename + '.png'
+        
+def get_picture_object_filepath(instance):
+    draftid = instance.draft.id
+    fileid = instance.id
+    return f'file_picture/{draftid}/{fileid}.png'
 
 class PictureObject(models.Model):
     name = models.CharField(max_length=100, null=False, default='layer')
-    picture = models.ImageField(upload_to=get_picture_object_filepath, null=True)
     x_position = models.IntegerField()
     y_position = models.IntegerField()
     order = models.PositiveIntegerField(default=0, null=False)
-    
+    draft =  models.ForeignKey(Draft, related_name='picture_object', on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to=get_picture_object_filepath, null=True)
+    def save(self, *args, **kwargs):
+        # Combine 'layer' and 'order' to create the 'name'
+        self.name = f'layer{self.order}'
+
+        super().save(*args, **kwargs)
+
+class DrawnObject(models.Model):
+    name = models.CharField(max_length=100, null=False, default='layer')
+    x_position = models.IntegerField()
+    y_position = models.IntegerField()
+    draft =  models.OneToOneField(Draft, related_name='drawn_object', on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to=get_picture_object_filepath, null=True)
     def save(self, *args, **kwargs):
         # Combine 'layer' and 'order' to create the 'name'
         self.name = f'layer{self.order}'
@@ -68,7 +84,8 @@ class TextObject(models.Model):
     x_position = models.IntegerField()
     y_position = models.IntegerField()
     order = models.PositiveIntegerField(default=0, null=False)
-    
+    draft =  models.ForeignKey(Draft, related_name='text_object', on_delete=models.CASCADE)
+        
     def save(self, *args, **kwargs):
         # Combine 'layer' and 'order' to create the 'name'
         self.name = f'layer{self.order}'

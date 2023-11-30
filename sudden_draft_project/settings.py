@@ -26,12 +26,14 @@ SECRET_KEY = 'django-insecure-o@2*+=39y!bh8$tl36*n9ls_ejojhgt_@-n5&z0qy-am^edzm7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'account',
     'main',
     'django.contrib.admin',
@@ -70,8 +72,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sudden_draft_project.wsgi.application'
-
+#WSGI_APPLICATION = 'sudden_draft_project.wsgi.application'
+ASGI_APPLICATION = 'sudden_draft_project.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -83,6 +85,11 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}   
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

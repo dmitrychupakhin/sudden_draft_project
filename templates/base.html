@@ -15,7 +15,12 @@
 <body>
     <div class="wrapper">
         <div class="header">
-            <div class="logo" onclick="main()">SuddenDraft</div>
+            <div class="logo" onclick="main()">
+                <div class="Sudden">Sudden</div>
+                <div class="Draft">Draft</div>
+                {% block logo %}
+                {% endblock logo %}
+            </div>
             {% if user.is_authenticated %}
             <div class="profile">
                 <a class="profile__button profile-button" href="{% url 'account' %}">
