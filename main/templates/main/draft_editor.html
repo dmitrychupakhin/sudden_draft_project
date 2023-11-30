@@ -13,6 +13,9 @@
 {% endblock logo %}
 
 {% block content %}
+<div class="material-symbols-outlined custom-cursor" id="custom-cursor">
+    edit
+</div>
 <div id="backgrounds">
     <canvas id="style0" height="40px" width="80px" onclick="setBackground(0)"></canvas>
     <canvas id="style1" height="40px" width="80px" onclick="setBackground(1)"></canvas>
@@ -109,12 +112,13 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
+
 <script src="{% static 'main/js/moving.js' %}"></script>
 <script src="{% static 'main/js/erasing.js' %}"></script>
 <script src="{% static 'main/js/drawing.js' %}"></script>
 <script src="{% static 'main/js/draft_editor.js' %}"></script>
 <script>
-
     const socket = new WebSocket(`ws://${window.location.host}/ws/draft/{{ draft.id }}/`);
 
     socket.onopen = (event) => {

@@ -1,10 +1,41 @@
 var active_now_button;
 
+function cursor_func() {
+    const container = document.querySelector('.canvas-block');
+    const cursor = document.querySelector('.custom-cursor');
+    var top_len;
+    if (document.getElementById("custom-cursor").innerHTML.trim() === "ink_eraser") {
+        top_len = 10;
+    }
+    else {
+        top_len = 20;
+    }
+
+
+    container.addEventListener('mouseenter', function () {
+        cursor.style.display = 'block';
+    });
+
+    container.addEventListener('mouseleave', function () {
+        cursor.style.display = 'none';
+    });
+
+    container.addEventListener('mousemove', function (e) {
+        cursor.style.left = e.pageX + 'px';
+        cursor.style.top = (e.pageY - top_len) + 'px';
+    });
+}
+
 function moveButtonActive(event) {
     drawButtonActivate = false;
     draw_button_click();
     eraseButtonActivate = false;
     erase_button_click();
+
+    var custom_cursor = document.getElementById("custom-cursor");
+    custom_cursor.innerHTML = event.target.innerHTML;
+
+
 
     if (active_now_button) {
         active_now_button.classList.remove('active_button');
@@ -17,10 +48,14 @@ function moveButtonActive(event) {
 }
 
 function eraserButtonActive(event) {
+
     drawButtonActivate = false;
     draw_button_click();
     moveButtonActivate = false;
     move_button_click();
+
+    var custom_cursor = document.getElementById("custom-cursor");
+    custom_cursor.innerHTML = event.target.innerHTML;
 
     if (active_now_button) {
         active_now_button.classList.remove('active_button');
@@ -29,6 +64,7 @@ function eraserButtonActive(event) {
     button.classList.add('active_button');
     active_now_button = button;
     eraseButtonActivate = true;
+    cursor_func();
     erase_button_click();
 }
 

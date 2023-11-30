@@ -130,6 +130,7 @@ body {
 }
 
 .canvas-block{
+    cursor: none;
     border: 1px solid rgba(82, 93, 100, 0.251);
     padding: 10px;
     height: calc(100vh - 120px);;
@@ -140,6 +141,7 @@ body {
 }
 
 .canvas-block-wrapper{
+    cursor: none;
     position: relative;
 }
 
@@ -199,6 +201,7 @@ body {
 }
 
 .canvas-block__item {
+    cursor: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -222,4 +225,11 @@ body {
 }
 #style5 {
     border: 1px solid rgb(218, 233, 249);
+}
+
+.custom-cursor {
+    display: none;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
 }

@@ -1,57 +1,107 @@
 
+
 var lineWidth = 2;
-var color = "black";
+var color = "rgba(60, 64, 67, 1)";
 var style = 1;
 
 var editor_canvas = document.getElementById("editor-canvas");
 var editor_context = editor_canvas.getContext("2d");
 
 function set_draw_style1(event) {
-    var button = event.target;
-    var draw_button = document.getElementById("toolbar-draw-button");
-    draw_button.innerHTML = button.innerHTML;
+    if (event) {
+        var button = event.target;
+        var draw_button = document.getElementById("toolbar-draw-button");
+        draw_button.innerHTML = button.innerHTML;
+        var custom_cursor = document.getElementById("custom-cursor");
+        custom_cursor.innerHTML = button.innerHTML;
+    }
+    editor_context.lineJoin = 'miter';
+    editor_context.lineCap = 'butt';
 
-    var isDrawing = false;
-    var drawButtonActivate = true;
+    var alpha = 1;
+    var rgbaColor = tinycolor(editor_context.strokeStyle).setAlpha(alpha).toRgbString();
+    // Устанавливаем цвет и стиль
+    color = rgbaColor;
+    editor_context.strokeStyle = rgbaColor;
     lineWidth = 2;
     editor_context.lineWidth = 2;
     style = 1;
+    cursor_func();
 }
 
 function set_draw_style2(event) {
-    var button = event.target;
-    var draw_button = document.getElementById("toolbar-draw-button");
-    draw_button.innerHTML = button.innerHTML;
+    if (event) {
+        var button = event.target;
+        var draw_button = document.getElementById("toolbar-draw-button");
+        draw_button.innerHTML = button.innerHTML;
+        var custom_cursor = document.getElementById("custom-cursor");
+        custom_cursor.innerHTML = button.innerHTML;
+    }
 
-    var isDrawing = false;
-    var drawButtonActivate = true;
-    lineWidth = 2;
-    editor_context.lineWidth = 2;
-    style = 1;
+
+    editor_context.lineJoin = 'round';
+    editor_context.lineCap = 'round';
+
+    var alpha = 0.9;
+    var rgbaColor = tinycolor(editor_context.strokeStyle).setAlpha(alpha).toRgbString();
+
+    // Устанавливаем цвет и стиль
+    color = rgbaColor;
+    editor_context.strokeStyle = rgbaColor;
+    lineWidth = 4;
+    editor_context.lineWidth = 4;
+    style = 2;
+    cursor_func();
 }
 
 function set_draw_style3(event) {
-    var button = event.target;
-    var draw_button = document.getElementById("toolbar-draw-button");
-    draw_button.innerHTML = button.innerHTML;
+    if (event) {
+        var button = event.target;
+        var draw_button = document.getElementById("toolbar-draw-button");
+        draw_button.innerHTML = button.innerHTML;
+        var custom_cursor = document.getElementById("custom-cursor");
+        custom_cursor.innerHTML = button.innerHTML;
+    }
 
-    var isDrawing = false;
-    var drawButtonActivate = true;
-    lineWidth = 2;
-    editor_context.lineWidth = 2;
-    style = 1;
+
+    editor_context.lineJoin = 'miter';
+    editor_context.lineCap = 'butt';
+
+    var alpha = 0.2;
+    var rgbaColor = tinycolor(editor_context.strokeStyle).setAlpha(alpha).toRgbString();
+
+    // Устанавливаем цвет и стиль
+    color = rgbaColor;
+    editor_context.strokeStyle = rgbaColor;
+    lineWidth = 15;
+    editor_context.lineWidth = 15;
+    style = 3;
+    cursor_func();
 }
 
 function set_draw_style4(event) {
-    var button = event.target;
-    var draw_button = document.getElementById("toolbar-draw-button");
-    draw_button.innerHTML = button.innerHTML;
+    if (event) {
+        var button = event.target;
+        var draw_button = document.getElementById("toolbar-draw-button");
+        draw_button.innerHTML = button.innerHTML;
+        var custom_cursor = document.getElementById("custom-cursor");
+        custom_cursor.innerHTML = button.innerHTML;
+    }
 
-    var isDrawing = false;
-    var drawButtonActivate = true;
-    lineWidth = 2;
-    editor_context.lineWidth = 2;
-    style = 1;
+
+    editor_context.lineJoin = 'miter';
+    editor_context.lineCap = 'butt';
+
+    var alpha = 0.05;
+    var rgbaColor = tinycolor(editor_context.strokeStyle).setAlpha(alpha).toRgbString();
+
+    // Устанавливаем цвет и стиль
+    color = rgbaColor;
+    editor_context.strokeStyle = rgbaColor;
+    lineWidth = 30;
+    editor_context.lineWidth = 30;
+    style = 4;
+    cursor_func();
 }
 
 
@@ -59,8 +109,14 @@ function set_draw_color(event) {
     var button = event.target;
     var computedStyle = window.getComputedStyle(button);
     var backgroundColor = computedStyle.backgroundColor;
-    color = backgroundColor;
-    editor_context.strokeStyle = backgroundColor;
+    var alpha = 1;
+    var rgbaColor = tinycolor(backgroundColor).setAlpha(alpha).toRgbString();
+
+    // Устанавливаем цвет и стиль
+    color = rgbaColor;
+    editor_context.strokeStyle = rgbaColor;
+
+    // Далее ваш код для установки стиля рисования в зависимости от переменной style
     if (style === 1) {
         set_draw_style1();
     }
@@ -69,6 +125,9 @@ function set_draw_color(event) {
     }
     else if (style === 3) {
         set_draw_style3();
+    }
+    else if (style === 4) {
+        set_draw_style4();
     }
 }
 
@@ -80,6 +139,8 @@ var drawButtonActivate = false;
 function draw_button_click() {
     editor_context.lineWidth = lineWidth;
     editor_context.strokeStyle = color;
+    var alpha = 1;
+    editor_context.strokeStyle = tinycolor(editor_context.strokeStyle).setAlpha(alpha).toRgbString();
     if (drawButtonActivate) {
         editor_canvas.addEventListener("mousedown", startDrawing);
         editor_canvas.addEventListener("touchstart", startDrawingTouch, { passive: false });
@@ -101,23 +162,38 @@ function draw_button_click() {
 
 function startDrawing(e) {
     isDrawing = true;
-    editor_context.beginPath();
     var rect = editor_canvas.getBoundingClientRect();
+    editor_context.beginPath();
     editor_context.moveTo(e.clientX - rect.left, e.clientY - rect.top);
 }
 
 function draw(e) {
     if (isDrawing) {
         var rect = editor_canvas.getBoundingClientRect();
-        editor_context.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        var x1 = e.clientX - rect.left;
+        var y1 = e.clientY - rect.top;
+        var x0 = editor_context.currentX || x1;
+        var y0 = editor_context.currentY || y1;
+
+        var xc = (x0 + x1) / 2;
+        var yc = (y0 + y1) / 2;
+        editor_context.quadraticCurveTo(x0, y0, xc, yc);
+
         editor_context.stroke();
+
+        editor_context.beginPath(); // Начать новый путь
+        editor_context.moveTo(xc, yc);
+
+        editor_context.currentX = x1;
+        editor_context.currentY = y1;
     }
-    console.log(editor_context.strokeStyle);
 }
 
 function stopDrawing() {
     if (isDrawing) {
         isDrawing = false;
+        delete editor_context.currentX;
+        delete editor_context.currentY;
         saveDrawing();
     }
 }
