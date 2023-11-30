@@ -80,7 +80,7 @@
         onclick="eraserButtonActive(event)">
         ink_eraser
     </button>
-    <button class="material-symbols-outlined toolbar__item">
+    <button class="material-symbols-outlined toolbar__item" onclick="moveButtonActive(event)">
         open_with
     </button>
     <button class="material-symbols-outlined toolbar__item">
@@ -97,7 +97,7 @@
     </button>
 </div>
 <div class="canvas-block">
-    <div class="canvas-block-wrapper"
+    <div class="canvas-block-wrapper" id="canvas-block-wrapper"
         style="height: calc({{ draft.height }}px + 0px); width: calc({{ draft.width }}px + 0px)">
         {% for layer in layers %}
         <canvas class="canvas{{ forloop.counter }} canvas-block__item"></canvas>
@@ -109,6 +109,7 @@
     </div>
 </div>
 
+<script src="{% static 'main/js/moving.js' %}"></script>
 <script src="{% static 'main/js/erasing.js' %}"></script>
 <script src="{% static 'main/js/drawing.js' %}"></script>
 <script src="{% static 'main/js/draft_editor.js' %}"></script>

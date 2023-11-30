@@ -1,8 +1,27 @@
 var active_now_button;
 
+function moveButtonActive(event) {
+    drawButtonActivate = false;
+    draw_button_click();
+    eraseButtonActivate = false;
+    erase_button_click();
+
+    if (active_now_button) {
+        active_now_button.classList.remove('active_button');
+    }
+    var button = event.target;
+    button.classList.add('active_button');
+    active_now_button = button;
+    moveButtonActivate = true;
+    move_button_click();
+}
+
 function eraserButtonActive(event) {
     drawButtonActivate = false;
     draw_button_click();
+    moveButtonActivate = false;
+    move_button_click();
+
     if (active_now_button) {
         active_now_button.classList.remove('active_button');
     }
@@ -16,6 +35,9 @@ function eraserButtonActive(event) {
 function drawButtonActive(event) {
     eraseButtonActivate = false;
     erase_button_click();
+    moveButtonActivate = false;
+    move_button_click();
+
     var dropdown = document.getElementById("draw-settings");
 
     if (!dropdown.style.display || dropdown.style.display === 'none') {
