@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from sudden_draft_project import settings
 from .forms import *
@@ -33,11 +33,19 @@ def new_draft(request):
     return render(request, 'main/new_draft.html', context)
 
 def draft_editor(request, id):
-    draft = Draft.objects.get(id=id)
-    layers = draft.get_layers()
-    context = {
-        'draft': draft,
-        'layers': layers
-    }
+    draft = get_object_or_404(Draft, id=id)
+    pictures = draft.get_pictures()
+    try:
+        drawing = draft.drawn_object
+        context = {
+            'draft': draft,
+            'pictures': pictures,
+            'drawing': drawing,
+        }
+    except:
+        context = {
+            'draft': draft,
+            'pictures': pictures,
+        }
     context['MEDIA_URL'] = settings.MEDIA_URL
     return render(request, 'main/draft_editor.html', context)

@@ -1,3 +1,5 @@
+import os
+from django.conf import settings
 from django.db import models
 from operator import attrgetter
 from account.models import SuddenDraftUser
@@ -10,13 +12,9 @@ class Draft(models.Model):
     is_public = models.BooleanField(default=False)
     users = models.ManyToManyField(SuddenDraftUser, related_name='packages')
     
-    def get_layers(self):
-        all_objects = list(self.picture_object.all()) + list(self.text_object.all())
+    def get_pictures(self):
+        all_objects = list(self.picture_object.all())
         all_objects = sorted(all_objects, key=attrgetter('order')) 
-        try:
-            all_objects = all_objects + list(self.drawn_object)
-        except:
-            pass
         return all_objects  
     
     def raise_higher(self, object):
@@ -48,48 +46,46 @@ class Draft(models.Model):
         self.picture_objects.save()
         self.save()
         
-def get_picture_object_filepath(instance):
-    draftid = instance.draft.id
-    fileid = instance.id
-    return f'file_picture/{draftid}/{fileid}.png'
+def get_drawn_object_filepath(instance, filename):
+    draft_id = instance.draft.id
+    return f'file_picture/{draft_id}/drawn_object.png'
+
+def get_drawn_object_filepath_for_save(draft_id):
+    return f'file_picture/{draft_id}/drawn_object.png'
+
+def get_picture_object_filepath(instance, filename):
+    file_id = instance.id
+    draft_id = instance.draft.id
+    return f'file_picture/{draft_id}/picture_object{file_id}.png'
 
 class PictureObject(models.Model):
-    name = models.CharField(max_length=100, null=False, default='layer')
     x_position = models.IntegerField()
     y_position = models.IntegerField()
     order = models.PositiveIntegerField(default=0, null=False)
     draft =  models.ForeignKey(Draft, related_name='picture_object', on_delete=models.CASCADE)
     picture = models.ImageField(upload_to=get_picture_object_filepath, null=True)
-    def save(self, *args, **kwargs):
-        # Combine 'layer' and 'order' to create the 'name'
-        self.name = f'layer{self.order}'
-
-        super().save(*args, **kwargs)
-
-class DrawnObject(models.Model):
-    name = models.CharField(max_length=100, null=False, default='layer')
-    x_position = models.IntegerField()
-    y_position = models.IntegerField()
-    draft =  models.OneToOneField(Draft, related_name='drawn_object', on_delete=models.CASCADE)
-    picture = models.ImageField(upload_to=get_picture_object_filepath, null=True)
-    def save(self, *args, **kwargs):
-        # Combine 'layer' and 'order' to create the 'name'
-        self.name = f'layer{self.order}'
-
-        super().save(*args, **kwargs)
+    
 
 class TextObject(models.Model):
-    name = models.CharField(max_length=100, null=False, default='layer')
     content = models.TextField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
     order = models.PositiveIntegerField(default=0, null=False)
     draft =  models.ForeignKey(Draft, related_name='text_object', on_delete=models.CASCADE)
-        
-    def save(self, *args, **kwargs):
-        # Combine 'layer' and 'order' to create the 'name'
-        self.name = f'layer{self.order}'
 
-        super().save(*args, **kwargs)
+class DrawnObject(models.Model):
+    draft =  models.OneToOneField(Draft, related_name='drawn_object', on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to=get_drawn_object_filepath, null=True)
+    def save(self, *args, **kwargs):
+            # Проверяем, существует ли файл по заданному пути
+            if self.picture:
+                file_path = os.path.join(settings.MEDIA_ROOT, get_drawn_object_filepath_for_save(draft_id=self.draft.pk))
+                if os.path.exists(file_path):
+                    # Если файл существует, удаляем его
+                    os.remove(file_path)
+
+            super().save(*args, **kwargs)
+
+        
         
         

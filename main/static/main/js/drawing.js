@@ -1,5 +1,4 @@
-
-
+//Значения для ручки по умолчанию
 var lineWidth = 2;
 var color = "rgba(60, 64, 67, 1)";
 var style = 1;
@@ -7,20 +6,21 @@ var style = 1;
 var editor_canvas = document.getElementById("editor-canvas");
 var editor_context = editor_canvas.getContext("2d");
 
+//Изменяем тип ручки
 function set_draw_style1(event) {
     if (event) {
+        //Изменяем иконку ручки
         var button = event.target;
         var draw_button = document.getElementById("toolbar-draw-button");
         draw_button.innerHTML = button.innerHTML;
         var custom_cursor = document.getElementById("custom-cursor");
         custom_cursor.innerHTML = button.innerHTML;
     }
+    // Устанавливаем цвет и стиль
     editor_context.lineJoin = 'miter';
     editor_context.lineCap = 'butt';
-
     var alpha = 1;
     var rgbaColor = tinycolor(editor_context.strokeStyle).setAlpha(alpha).toRgbString();
-    // Устанавливаем цвет и стиль
     color = rgbaColor;
     editor_context.strokeStyle = rgbaColor;
     lineWidth = 2;
@@ -104,7 +104,7 @@ function set_draw_style4(event) {
     cursor_func();
 }
 
-
+//Изменяем цвет ручки
 function set_draw_color(event) {
     var button = event.target;
     var computedStyle = window.getComputedStyle(button);
@@ -131,8 +131,7 @@ function set_draw_color(event) {
     }
 }
 
-//Рисование
-
+// Рисование
 var isDrawing = false;
 var drawButtonActivate = false;
 
@@ -265,6 +264,7 @@ function saveDrawing() {
     var yPosition = regionY; // Ваш y_position
 
     var data = {
+        type: 'draw_picture_change',
         image: imageURL,
         x_position: xPosition,
         y_position: yPosition

@@ -86,7 +86,8 @@
     <button class="material-symbols-outlined toolbar__item" onclick="moveButtonActive(event)">
         open_with
     </button>
-    <button class="material-symbols-outlined toolbar__item">
+    <input type="file" id="fileInput" style="display: none" accept="image/*">
+    <button class="material-symbols-outlined toolbar__item" onclick="newPictureObject(event)">
         add_photo_alternate
     </button>
     <button class="material-symbols-outlined toolbar__item">
@@ -102,11 +103,12 @@
 <div class="canvas-block">
     <div class="canvas-block-wrapper" id="canvas-block-wrapper"
         style="height: calc({{ draft.height }}px + 0px); width: calc({{ draft.width }}px + 0px)">
-        {% for layer in layers %}
-        <canvas class="canvas{{ forloop.counter }} canvas-block__item"></canvas>
-        {% endfor %}
         <canvas class="base-canvas canvas-block__item" id="base-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
+        {% for picture in pictures %}
+        <canvas class="canvas{{ forloop.counter }} canvas-block__item" id="canvas-{{ forloop.counter }}"
+            width="{{ draft.width }}" height="{{ draft.height }}"></canvas>
+        {% endfor %}
         <canvas class="editor-canvas canvas-block__item" id="editor-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
     </div>
@@ -119,6 +121,62 @@
 <script src="{% static 'main/js/drawing.js' %}"></script>
 <script src="{% static 'main/js/draft_editor.js' %}"></script>
 <script>
+    var base_canvas = document.getElementById("base-canvas");
+    var base_context = editor_canvas.getContext("2d");
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setBackground_non_websocket("{{ draft.background }}");
+        var img = new Image();
+        img.src = "{{ drawing.picture.url }}";
+        img.onload = function () {
+            base_context.drawImage(img, 0, 0);
+        };
+
+        var urls = [];
+        var x = [];
+        var y = [];
+
+        "{% for picture in pictures %}"
+        urls.push("{{picture.picture.url}}");
+        x.push("{{ picture.picture.x_position }}");
+        y.push("{{ picture.picture.y_position }}");
+        "{% endfor %}"
+
+        // Функция для загрузки изображения по URL
+        async function loadImage(url) {
+            return new Promise((resolve, reject) => {
+                var img = new Image();
+                img.onload = function () {
+                    resolve(img);
+                };
+                img.onerror = function () {
+                    reject(new Error('Не удалось загрузить изображение: ' + url));
+                };
+                img.src = url;
+            });
+        }
+
+        // Функция для отрисовки изображений в заданной последовательности
+        async function drawImagesSequentially() {
+            for (var i = 0; i < urls.length; i++) {
+                var canvas_name = "canvas-" + (i + 1);
+                console.log(canvas_name);
+                var current_canvas = document.getElementById(canvas_name);
+                var current_context = current_canvas.getContext("2d");
+                try {
+                    const img = await loadImage(urls[i]);
+                    current_context.drawImage(img, x[i], y[i], img.width, img.height);
+                    // Дополнительная логика или обработка после отрисовки каждого изображения
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+
+        // Вызываем функцию для отрисовки изображений
+        drawImagesSequentially();
+    });
+
     const socket = new WebSocket(`ws://${window.location.host}/ws/draft/{{ draft.id }}/`);
 
     socket.onopen = (event) => {
@@ -126,34 +184,48 @@
     };
 
     socket.onmessage = (event) => {
-        try {
-            var data = JSON.parse(event.data);
+        var editor_canvas = document.getElementById("editor-canvas");
+        var editor_context = editor_canvas.getContext("2d");
 
-            const receivedCoordinates = data.coordinates;
+        var parse_data = JSON.parse(event.data);
 
-            if (receivedCoordinates) {
-                for (let i = 0; i < receivedCoordinates.length; i++) {
-                    const coordinate = receivedCoordinates[i];
-                    editor_context.clearRect(coordinate.x, coordinate.y, 15, 15);
-                }
-            } else {
-                var x_position = data.x_position;
-                var y_position = data.y_position;
-                var picture_url = data.picture_url;
+        const background_style = parse_data.background_style;
+        const receivedCoordinates = parse_data.coordinates;
 
-                var img = new Image();
-
-                if (picture_url) {
-                    img.src = picture_url;
-                    img.onload = function () {
-                        editor_context.drawImage(img, x_position, y_position);
-                    };
-                } else {
-                    console.error('URL изображения не определен.');
-                }
+        if (background_style) {
+            //Если пришло событие для фона
+            setBackground_non_websocket(background_style);
+        }
+        else if (receivedCoordinates) {
+            //Если пришло событие для ластика
+            for (let i = 0; i < receivedCoordinates.length; i++) {
+                const coordinate = receivedCoordinates[i];
+                editor_context.clearRect(coordinate.x, coordinate.y, 15, 15);
             }
-        } catch (error) {
-            console.error('Ошибка при парсинге JSON:', error);
+            var save_draw_image = editor_canvas.toDataURL('image/png');
+            var data = {
+                type: 'draw_picture_save',
+                save_draw_image: save_draw_image,
+            };
+            socket.send(JSON.stringify(data));
+        } else {
+            //Если пришло событие для обновления draw picture
+            var x_position = parse_data.x_position;
+            var y_position = parse_data.y_position;
+            var picture_url = parse_data.picture_url;
+
+            var img = new Image();
+            img.src = picture_url;
+            img.onload = function () {
+                editor_context.drawImage(img, x_position, y_position);
+
+                var save_draw_image = editor_canvas.toDataURL('image/png');
+                var data = {
+                    type: 'draw_picture_save',
+                    save_draw_image: save_draw_image,
+                };
+                socket.send(JSON.stringify(data));
+            };
         }
     }
 

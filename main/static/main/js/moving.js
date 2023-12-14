@@ -4,6 +4,7 @@ var startX, startY, scrollLeft, scrollTop;
 var container = document.querySelector('.canvas-block');
 var content = document.getElementById("editor-canvas");
 
+//Алгоритм перемещения поля
 function move_button_click() {
     if (moveButtonActivate) {
         container.style.cursor = "grab";

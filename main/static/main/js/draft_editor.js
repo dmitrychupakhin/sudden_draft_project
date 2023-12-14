@@ -1,5 +1,7 @@
+//Активная кнопка сейчас
 var active_now_button;
 
+//Функция для кастомного курсора
 function cursor_func() {
     const container = document.querySelector('.canvas-block');
     const cursor = document.querySelector('.custom-cursor');
@@ -26,6 +28,7 @@ function cursor_func() {
     });
 }
 
+//Кнопка Move активная
 function moveButtonActive(event) {
     drawButtonActivate = false;
     draw_button_click();
@@ -47,6 +50,7 @@ function moveButtonActive(event) {
     move_button_click();
 }
 
+//Кнопка Eraser активная
 function eraserButtonActive(event) {
 
     drawButtonActivate = false;
@@ -68,7 +72,9 @@ function eraserButtonActive(event) {
     erase_button_click();
 }
 
+//Кнопка Draw активная
 function drawButtonActive(event) {
+
     eraseButtonActivate = false;
     erase_button_click();
     moveButtonActivate = false;
@@ -96,16 +102,41 @@ function drawButtonActive(event) {
     draw_button_click();
 }
 
-window.onclick = function (event) {
-    var dropdown = document.getElementById("draw-settings");
-    if (!event.target.matches('.draw-button') && !dropdown.contains(event.target)) {
-        dropdown.style.display = 'none';
-    }
+function newPictureObject(event) {
+    eraseButtonActivate = false;
+    erase_button_click();
+    moveButtonActivate = false;
+    move_button_click();
+    drawButtonActivate = false;
+    draw_button_click();
+
+    var fileInput = document.getElementById('fileInput');
+    fileInput.click();
+    fileInput.addEventListener('change', handleFileSelect);
 }
 
-//Фон
+function handleFileSelect() {
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
 
-function setBackground(style) {
+    if (file) {
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+            // Отправка данных на сервер через веб-сокеты с использованием socket.send
+            socket.send(JSON.stringify({ type: 'image-upload', imageData: event.target.result }));
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        console.log('Выберите изображение для загрузки.');
+    }
+    // Удаляем обработчик события change после выбора файла
+    fileInput.removeEventListener('change', handleFileSelect);
+}
+
+//Изменить фон только у себя
+function setBackground_non_websocket(style) {
     if (style == "0") {
         drawGridstyle0("base-canvas", 20);
     }
@@ -120,6 +151,28 @@ function setBackground(style) {
     }
 }
 
+//Изменить фон у всех пользователей в комнате
+function setBackground(style) {
+    if (style == "0") {
+        drawGridstyle0("base-canvas", 20);
+    }
+    else if (style == "1") {
+        drawGridstyle1("base-canvas", 20);
+    }
+    else if (style == "2") {
+        drawGridstyle2("base-canvas", 20);
+    }
+    else if (style == "3") {
+        drawGridstyle3("base-canvas", 20);
+    }
+    var data = {
+        type: 'background_set',
+        background_style: style,
+    };
+    socket.send(JSON.stringify(data));
+}
+
+//Открыли окно фонов
 function toggleDropdown(event) {
     var dropdown = document.getElementById("backgrounds");
 
@@ -136,6 +189,7 @@ function toggleDropdown(event) {
     }
 }
 
+//При нажатии вне активного окна, оно сварачивается
 window.onclick = function (event) {
     var dropdown = document.getElementById("backgrounds");
     if (!event.target.matches('.background_button') && !dropdown.contains(event.target)) {
@@ -147,9 +201,7 @@ window.onclick = function (event) {
     }
 }
 
-
-
-//Разлинеивание 
+//Разлинеивание фона
 function drawGridstyle0(canvasId) {
     var canvas = document.getElementById(canvasId);
     var context = canvas.getContext("2d");
@@ -182,7 +234,6 @@ function drawGridstyle1(canvasId, cellSize) {
         context.stroke();
     }
 }
-
 function drawGridstyle2(canvasId, cellSize) {
     var canvas = document.getElementById(canvasId);
     var context = canvas.getContext("2d");
@@ -201,7 +252,6 @@ function drawGridstyle2(canvasId, cellSize) {
         context.stroke();
     }
 }
-
 function drawGridstyle3(canvasId, cellSize) {
     var canvas = document.getElementById(canvasId);
     var context = canvas.getContext("2d");
