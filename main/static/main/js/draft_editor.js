@@ -38,8 +38,6 @@ function moveButtonActive(event) {
     var custom_cursor = document.getElementById("custom-cursor");
     custom_cursor.innerHTML = event.target.innerHTML;
 
-
-
     if (active_now_button) {
         active_now_button.classList.remove('active_button');
     }
@@ -47,6 +45,7 @@ function moveButtonActive(event) {
     button.classList.add('active_button');
     active_now_button = button;
     moveButtonActivate = true;
+    cursor_func();
     move_button_click();
 }
 
@@ -102,6 +101,7 @@ function drawButtonActive(event) {
     draw_button_click();
 }
 
+//Добавление картинки
 function newPictureObject(event) {
     eraseButtonActivate = false;
     erase_button_click();

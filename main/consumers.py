@@ -102,11 +102,20 @@ class ChatConsumer(WebsocketConsumer):
             picture_object.save()
             
             return
+        elif message_type == 'picture_pisition_change':
+            id = data.get('id')
+            x_position = data.get('x_position')
+            y_position = data.get('y_position')
             
+            picture_object = PictureObject.objects.get(id=id)
             
+            picture_object.x_position = x_position
+            picture_object.y_position = y_position
             
+            picture_object.save()
             
-        
+            return
+
     def erase_data(self, event):
         coordinates = event['coordinates']
         self.send(text_data=json.dumps({
