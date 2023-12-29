@@ -9,11 +9,13 @@ var isPictureMove = null;
 //Алгоритм перемещения поля
 function move_button_click() {
     if (moveButtonActivate) {
+        editor_canvas.style = "pointer-events: none;";
         container.style.cursor = "grab";
         container.addEventListener("mousedown", startMove);
         container.addEventListener("mousemove", move);
         container.addEventListener("mouseup", stopMove);
     } else {
+        editor_canvas.style = "pointer-events: auto;";
         container.style.cursor = "auto";
         container.removeEventListener("mousedown", startMove);
         container.removeEventListener("mousemove", move);

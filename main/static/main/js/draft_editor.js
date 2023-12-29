@@ -45,6 +45,7 @@ function moveButtonActive(event) {
     button.classList.add('active_button');
     active_now_button = button;
     moveButtonActivate = true;
+
     cursor_func();
     move_button_click();
 }

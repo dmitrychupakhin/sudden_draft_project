@@ -102,27 +102,41 @@
 </div>
 <div class="canvas-block">
     <div class="canvas-block-wrapper" id="canvas-block-wrapper"
-        style="height: calc({{ draft.height }}px + 0px); width: calc({{ draft.width }}px + 0px)">
+        style="position: relative; height: calc({{ draft.height }}px + 0px); width: calc({{ draft.width }}px + 0px)">
         <!--Фон-->
         <canvas class="base-canvas canvas-block__item" id="base-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
         <!--Картинки-->
-
         {% for picture in pictures %}
-        <canvas class="canvas{{ forloop.counter }} canvas-block__item" id="canvas-{{ forloop.counter }}"
-            width="{{ draft.width }}" height="{{ draft.height }}"></canvas>
+        <div id="picture_block" class="picture_block"
+            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px);"
+            width="{{ picture.picture.width }}" height="{{ picture.picture.height }}">
+            <canvas style="position:absolute;" class="canvas-picture canvas-block__item"
+                id="canvas-{{ forloop.counter }}" width="{{ picture.picture.width }}"
+                height="{{ picture.picture.height }}">
+            </canvas>
+            <div style="position:absolute;" class="picture_block_buttons">
+                <div class="picture_block__button">
+                    +
+                </div>
+                <div class="picture_block__button">
+                    -
+                </div>
+            </div>
+        </div>
+
+
         {% endfor %}
-        <!--
-        <canvas class="canvas-picture canvas-block__item" id="canvas-picture" width="{{ draft.width }}"
-            height="{{ draft.height }}"></canvas>-->
         <!--Рисунки-->
-        <canvas class="editor-canvas canvas-block__item" id="editor-canvas" width="{{ draft.width }}"
+        <canvas class=" editor-canvas canvas-block__item" id="editor-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
+
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
 
+<script src="{% static 'main/js/picture_edit.js' %}"></script>
 <script src="{% static 'main/js/draft_editor_load.js' %}"></script>
 <script src="{% static 'main/js/moving.js' %}"></script>
 <script src="{% static 'main/js/erasing.js' %}"></script>
@@ -138,6 +152,10 @@
     var width = [];
     var height = [];
     var id = [];
+
+    function hello(id) {
+        console.log("123");
+    }
 
     function draw_picture(id) {
         // Функция для загрузки изображения по URL
@@ -163,11 +181,15 @@
                     try {
                         var current_canvas = document.getElementById(canvas_name);
                         var current_context = current_canvas.getContext("2d");
-                        current_context.clearRect(0, 0, current_canvas.width, current_canvas.height);
+
                         const img = await loadImage(urls[i]);
-                        current_context.drawImage(img, x[i], y[i], img.width, img.height);
+                        current_context.clearRect(0, 0, current_canvas.width, current_canvas.height);
+                        current_context.drawImage(img, 0, 0, img.width, img.height);
                         height[i] = img.height;
                         width[i] = img.width;
+
+
+
                         // Дополнительная логика или обработка после отрисовки каждого изображения
                     } catch (error) {
                         console.error(error);
@@ -177,14 +199,16 @@
             else {
                 var canvas_name = "canvas-" + (id + 1);
                 try {
-                    var current_canvas = document.getElementById(canvas_name);
-                    var current_context = current_canvas.getContext("2d");
+                    var current_canvas = document.getElementById("picture_block");
+                    //var current_context = current_canvas.getContext("2d");
 
-                    const img = await loadImage(urls[id]);
-                    current_context.clearRect(0, 0, current_canvas.width, current_canvas.height);
-                    current_context.drawImage(img, x[id], y[id], img.width, img.height);
-                    height[id] = img.height;
-                    width[id] = img.width;
+                    current_canvas.style = `position: absolute; transform: translate(${x[id]}px, ${y[id]}px);)`;
+
+                    //const img = await loadImage(urls[id]);
+                    //current_context.clearRect(0, 0, current_canvas.width, current_canvas.height);
+                    //current_context.drawImage(img, 0, 0, img.width, img.height);
+                    //height[id] = img.height;
+                    //width[id] = img.width;
                     // Дополнительная логика или обработка после отрисовки каждого изображения
                 } catch (error) {
                     console.error(error);
@@ -203,11 +227,10 @@
         img.onload = function () {
             base_context.drawImage(img, 0, 0);
         };
-
         "{% for picture in pictures %}"
         urls.push("{{picture.picture.url}}");
-        x.push("{{ picture.x_position }}");
-        y.push("{{ picture.y_position }}");
+        x.push("{{picture.x_position}}");
+        y.push("{{picture.y_position}}");
         id.push("{{ picture.id }}");
         "{% endfor %}"
 

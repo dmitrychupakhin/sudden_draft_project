@@ -234,3 +234,33 @@ body {
     pointer-events: none;
     z-index: 9999;
 }
+
+.picture_block__button{
+    margin-right: 20px;
+    font-size: 40px;
+}
+
+.picture_block_buttons{
+    transition: opacity 0.2s ease;
+    display: flex;
+    opacity: 0;
+}
+
+.canvas-picture {
+    transition: box-shadow 0.2s ease;
+    /* Применяем transition только к box-shadow */
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.3);
+}
+
+.canvas-picture:hover {
+    box-shadow: 0px 0px 0px 5px rgb(134, 188, 250);
+}
+
+.canvas-picture:hover + .picture_block_buttons{
+    opacity: 1;
+}
+
+.picture_block_buttons:hover {
+    display: flex;
+    opacity: 1;
+}
