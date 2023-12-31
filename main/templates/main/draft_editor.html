@@ -115,9 +115,10 @@
                 height="{{ picture.picture.height }}">
             </canvas>
             <div id="buttons-{{ forloop.counter }}" class="picture_block_buttons"
-                style="width: {{ picture.picture.height }}px; height: {{ picture.picture.width }}px;"
+                style="width: {{ picture.picture.width }}px; height: {{ picture.picture.height }}px;"
                 onmouseover="hoverBlock({{ forloop.counter }})" onmouseout="unhoverBlock({{ forloop.counter }})">
-                <div class="picture_block__button-resize"></div>
+                <div class="picture_block__button-resize" onmousedown="buttonResizeDown({{ forloop.counter }}, event)">
+                </div>
                 <div class="picture_block__button-rotate"></div>
             </div>
         </div>

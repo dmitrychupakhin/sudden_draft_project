@@ -31,7 +31,6 @@ function startMove(e) {
     var rect = editor_canvas.getBoundingClientRect();
     var canvas = e.target;
     isPictureMove = parseInt(canvas.id.replace("buttons-", "")) - 1;
-    console.log(isPictureMove);
     if (!isNaN(isPictureMove)) {
         container.style.cursor = "grabbing";
         startX = e.clientX - rect.left;
