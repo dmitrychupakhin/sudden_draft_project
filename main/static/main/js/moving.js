@@ -4,10 +4,12 @@ var startX, startY, scrollLeft, scrollTop;
 var container = document.querySelector('.canvas-block');
 var content = document.getElementById("editor-canvas");
 
-var isPictureMove = null;
+
+var isPictureMove = NaN;
 
 //Алгоритм перемещения поля
 function move_button_click() {
+
     if (moveButtonActivate) {
         editor_canvas.style = "pointer-events: none;";
         container.style.cursor = "grab";
@@ -16,17 +18,22 @@ function move_button_click() {
         container.addEventListener("mouseup", stopMove);
     } else {
         editor_canvas.style = "pointer-events: auto;";
-        container.style.cursor = "auto";
+        container.style.cursor = "none";
         container.removeEventListener("mousedown", startMove);
         container.removeEventListener("mousemove", move);
         container.removeEventListener("mouseup", stopMove);
+
     }
 }
 
 function startMove(e) {
+
     var rect = editor_canvas.getBoundingClientRect();
-    isPictureMove = isClickInPicture(e.clientX - rect.left, e.clientY - rect.top);
-    if (isPictureMove != null) {
+    var canvas = e.target;
+    isPictureMove = parseInt(canvas.id.replace("buttons-", "")) - 1;
+    console.log(isPictureMove);
+    if (!isNaN(isPictureMove)) {
+        container.style.cursor = "grabbing";
         startX = e.clientX - rect.left;
         startY = e.clientY - rect.top;
         scrollLeft = startX - x[isPictureMove];
@@ -44,7 +51,7 @@ function startMove(e) {
 
 function move(e) {
     if (isMouseDown) {
-        if (isPictureMove != null) {
+        if (!isNaN(isPictureMove)) {
 
             var rect = editor_canvas.getBoundingClientRect();
             x[isPictureMove] = e.clientX - rect.left - scrollLeft;
@@ -65,7 +72,7 @@ function move(e) {
 }
 
 function stopMove() {
-    if (isPictureMove != null) {
+    if (!isNaN(isPictureMove)) {
         var data = {
             type: 'picture_pisition_change',
             id: id[isPictureMove],

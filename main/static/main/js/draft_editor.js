@@ -13,10 +13,11 @@ function cursor_func() {
         top_len = 20;
     }
 
-
-    container.addEventListener('mouseenter', function () {
-        cursor.style.display = 'block';
-    });
+    if (document.getElementById("custom-cursor").innerHTML.trim() !== "") {
+        container.addEventListener('mouseenter', function () {
+            cursor.style.display = 'block';
+        });
+    }
 
     container.addEventListener('mouseleave', function () {
         cursor.style.display = 'none';
@@ -36,7 +37,7 @@ function moveButtonActive(event) {
     erase_button_click();
 
     var custom_cursor = document.getElementById("custom-cursor");
-    custom_cursor.innerHTML = event.target.innerHTML;
+    custom_cursor.innerHTML = "";
 
     if (active_now_button) {
         active_now_button.classList.remove('active_button');

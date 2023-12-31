@@ -108,24 +108,19 @@
             height="{{ draft.height }}"></canvas>
         <!--Картинки-->
         {% for picture in pictures %}
-        <div id="picture_block" class="picture_block"
-            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px);"
-            width="{{ picture.picture.width }}" height="{{ picture.picture.height }}">
+        <div id="picture_block-{{ forloop.counter }}" class="picture_block"
+            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px); width: {{ picture.picture.height }}px; height: {{ picture.picture.width }}px;">
             <canvas style="position:absolute;" class="canvas-picture canvas-block__item"
                 id="canvas-{{ forloop.counter }}" width="{{ picture.picture.width }}"
                 height="{{ picture.picture.height }}">
             </canvas>
-            <div style="position:absolute;" class="picture_block_buttons">
-                <div class="picture_block__button">
-                    +
-                </div>
-                <div class="picture_block__button">
-                    -
-                </div>
+            <div id="buttons-{{ forloop.counter }}" class="picture_block_buttons"
+                style="width: {{ picture.picture.height }}px; height: {{ picture.picture.width }}px;"
+                onmouseover="hoverBlock({{ forloop.counter }})" onmouseout="unhoverBlock({{ forloop.counter }})">
+                <div class="picture_block__button-resize"></div>
+                <div class="picture_block__button-rotate"></div>
             </div>
         </div>
-
-
         {% endfor %}
         <!--Рисунки-->
         <canvas class=" editor-canvas canvas-block__item" id="editor-canvas" width="{{ draft.width }}"
@@ -177,39 +172,21 @@
             if (id == null) {
                 for (var i = 0; i < urls.length; i++) {
                     var canvas_name = "canvas-" + (i + 1);
-                    //console.log(canvas_name);
                     try {
                         var current_canvas = document.getElementById(canvas_name);
                         var current_context = current_canvas.getContext("2d");
-
                         const img = await loadImage(urls[i]);
-                        current_context.clearRect(0, 0, current_canvas.width, current_canvas.height);
                         current_context.drawImage(img, 0, 0, img.width, img.height);
-                        height[i] = img.height;
-                        width[i] = img.width;
-
-
-
-                        // Дополнительная логика или обработка после отрисовки каждого изображения
                     } catch (error) {
                         console.error(error);
                     }
                 }
             }
             else {
-                var canvas_name = "canvas-" + (id + 1);
+                var name = "picture_block-" + (id + 1);
                 try {
-                    var current_canvas = document.getElementById("picture_block");
-                    //var current_context = current_canvas.getContext("2d");
-
+                    var current_canvas = document.getElementById(name);
                     current_canvas.style = `position: absolute; transform: translate(${x[id]}px, ${y[id]}px);)`;
-
-                    //const img = await loadImage(urls[id]);
-                    //current_context.clearRect(0, 0, current_canvas.width, current_canvas.height);
-                    //current_context.drawImage(img, 0, 0, img.width, img.height);
-                    //height[id] = img.height;
-                    //width[id] = img.width;
-                    // Дополнительная логика или обработка после отрисовки каждого изображения
                 } catch (error) {
                     console.error(error);
                 }
@@ -232,6 +209,8 @@
         x.push("{{picture.x_position}}");
         y.push("{{picture.y_position}}");
         id.push("{{ picture.id }}");
+        var canvas = document.getElementById("buttons-{{ forloop.counter }}");
+        canvas.addEventListener("mousedown", startMove);
         "{% endfor %}"
 
         draw_picture();
@@ -293,14 +272,6 @@
         console.log('WebSocket connection closed:', event);
     };
 
-    function isClickInPicture(x_cursor, y_cursor) {
-        for (var i = x.length; i >= 0; i--) {
-            if (x[i] <= x_cursor && y[i] <= y_cursor && x_cursor <= (parseInt(x[i]) + parseInt(width[i])) && y_cursor <= (parseInt(x[i]) + parseInt(width[i]))) {
-                return i;
-            }
-        }
-        return null;
-    }
 </script>
 
 {% endblock content %}

@@ -130,7 +130,7 @@ body {
 }
 
 .canvas-block{
-    cursor: none;
+    
     border: 1px solid rgba(82, 93, 100, 0.251);
     padding: 10px;
     height: calc(100vh - 120px);;
@@ -141,7 +141,7 @@ body {
 }
 
 .canvas-block-wrapper{
-    cursor: none;
+
     position: relative;
 }
 
@@ -201,7 +201,6 @@ body {
 }
 
 .canvas-block__item {
-    cursor: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -235,25 +234,57 @@ body {
     z-index: 9999;
 }
 
-.picture_block__button{
-    margin-right: 20px;
-    font-size: 40px;
-}
-
-.picture_block_buttons{
-    transition: opacity 0.2s ease;
-    display: flex;
-    opacity: 0;
-}
-
 .canvas-picture {
-    transition: box-shadow 0.2s ease;
-    /* Применяем transition только к box-shadow */
     box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.3);
 }
 
-.canvas-picture:hover {
+.picture_block__button-resize{
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    border-radius: 25px;
+    background-color: rgb(134, 188, 250);
+    border: 3px solid rgb(255, 255, 255);
+    font-size: 40px;
+    right: -10px;
+    bottom: -10px;
+}
+
+.picture_block__button-resize:hover{
+    cursor: nwse-resize;
+}
+
+.picture_block__button-rotate {
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    border-radius: 25px;
+    background-color: rgb(134, 188, 250);
+    border: 3px solid rgb(255, 255, 255);
+    font-size: 40px;
+    left: -10px;
+    top: -10px;
+}
+
+.picture_block__button-rotate:hover{
+    cursor: nesw-resize;
+}
+
+.picture_block_buttons{
+    transition: box-shadow 0.5s ease;
+    transition: opacity 0.5s ease;
+    position: relative;
+    opacity: 0;
+}
+
+
+.hovered{
     box-shadow: 0px 0px 0px 5px rgb(134, 188, 250);
+}
+
+/*
+.picture_block_buttons:hover + .canvas-picture {
+    
 }
 
 .canvas-picture:hover + .picture_block_buttons{
@@ -261,6 +292,6 @@ body {
 }
 
 .picture_block_buttons:hover {
-    display: flex;
     opacity: 1;
 }
+*/
