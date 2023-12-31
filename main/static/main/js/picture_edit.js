@@ -33,25 +33,33 @@ function buttonResizeMove(e) {
         var rect = editor_canvas.getBoundingClientRect();
 
         var element = document.getElementById(`picture_block-${currentId}`);
-        console.log(e.clientX);
-        console.log(e.clientX - x[currentId - 1] - rect.left);
 
-        element.style.width = (e.clientX - x[currentId - 1] - rect.left) + 'px';
-        element.style.height = (e.clientY - y[currentId - 1] - rect.top) + 'px';
+        console.log(element.offsetWidth);
+        console.log(element.offsetHeight);
 
-        var element = document.getElementById(`canvas-${currentId}`);
+        var originalWidth = element.offsetWidth;
+        var originalHeight = element.offsetHeight;
 
-        element.style.width = (e.clientX - x[currentId - 1] - rect.left) + 'px';
-        element.style.height = (e.clientY - y[currentId - 1] - rect.top) + 'px';
+        var newWidth = e.clientX - x[currentId - 1] - rect.left;
 
-        var element = document.getElementById(`buttons-${currentId}`);
+        // Рассчитываем коэффициент пропорций
+        var aspectRatio = originalWidth / originalHeight;
 
-        element.style.width = (e.clientX - x[currentId - 1] - rect.left) + 'px';
-        element.style.height = (e.clientY - y[currentId - 1] - rect.top) + 'px';
+        // Рассчитываем новую высоту на основе изменения ширины с учетом пропорций
+        var newHeight = newWidth / aspectRatio;
 
+        element.style.width = newWidth + 'px';
+        element.style.height = newHeight + 'px';
+
+        var canvasElement = document.getElementById(`canvas-${currentId}`);
+        canvasElement.style.width = newWidth + 'px';
+        canvasElement.style.height = newHeight + 'px';
+
+        var buttonsElement = document.getElementById(`buttons-${currentId}`);
+        buttonsElement.style.width = newWidth + 'px';
+        buttonsElement.style.height = newHeight + 'px';
     }
 }
-
 function buttonResizeUp() {
     isMouseDown2 = false;
     container.removeEventListener("mousemove", buttonResizeMove);

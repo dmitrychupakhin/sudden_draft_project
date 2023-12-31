@@ -109,7 +109,7 @@
         <!--Картинки-->
         {% for picture in pictures %}
         <div id="picture_block-{{ forloop.counter }}" class="picture_block"
-            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px); width: {{ picture.picture.height }}px; height: {{ picture.picture.width }}px;">
+            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px); width: {{ picture.picture.width }}px; height: {{ picture.picture.height }}px;">
             <canvas style="position:absolute;" class="canvas-picture canvas-block__item"
                 id="canvas-{{ forloop.counter }}" width="{{ picture.picture.width }}"
                 height="{{ picture.picture.height }}">
