@@ -25,37 +25,34 @@
 <div id="draw-settings">
     <div class="draw-settings-style-wrapper">
         <button class="material-symbols-outlined draw-settings__style" id="draw-button-style"
-            onclick="set_draw_style1(event)">
+            onclick="setDrawStyle1(event)">
             edit
         </button>
-        <button class="material-symbols-outlined draw-settings__style" id="draw-button"
-            onclick="set_draw_style2(event)">
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button" onclick="setDrawStyle2(event)">
             ink_marker
         </button>
-        <button class="material-symbols-outlined draw-settings__style" id="draw-button"
-            onclick="set_draw_style3(event)">
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button" onclick="setDrawStyle3(event)">
             ink_highlighter
         </button>
-        <button class="material-symbols-outlined draw-settings__style" id="draw-button"
-            onclick="set_draw_style4(event)">
+        <button class="material-symbols-outlined draw-settings__style" id="draw-button" onclick="setDrawStyle4(event)">
             brush
         </button>
     </div>
     <div class="draw-settings-color-wrapper1">
         <button class="material-symbols-outlined draw-settings__color" id="draw-button"
-            style="background-color:rgb(60,64,67);" onclick="set_draw_color(event)"></button>
+            style="background-color:rgb(60,64,67);" onclick="setDrawColor(event)"></button>
         <button class="material-symbols-outlined draw-settings__color" id="draw-button"
-            style="background-color: rgb(25,172,192);" onclick="set_draw_color(event)"></button>
+            style="background-color: rgb(25,172,192);" onclick="setDrawColor(event)"></button>
         <button class="material-symbols-outlined draw-settings__color" id="draw-button"
-            style="background-color:rgb(105,158,62);" onclick="set_draw_color(event)"></button>
+            style="background-color:rgb(105,158,62);" onclick="setDrawColor(event)"></button>
     </div>
     <div class="draw-settings-color-wrapper2">
         <button class="material-symbols-outlined draw-settings__color" id="draw-button"
-            style="background-color: rgb(255, 255, 255);" onclick="set_draw_color(event)"></button>
+            style="background-color: rgb(255, 255, 255);" onclick="setDrawColor(event)"></button>
         <button class="material-symbols-outlined draw-settings__color" id="draw-button"
-            style="background-color:rgb(243,179,42);" onclick="set_draw_color(event)"></button>
+            style="background-color:rgb(243,179,42);" onclick="setDrawColor(event)"></button>
         <button class="material-symbols-outlined draw-settings__color" id="draw-button"
-            style="background-color: rgb(217,69,60);" onclick="set_draw_color(event)"></button>
+            style="background-color: rgb(217,69,60);" onclick="setDrawColor(event)"></button>
     </div>
 
     </button>
@@ -76,14 +73,14 @@
 </div>
 <div class="toolbar">
     <button class="material-symbols-outlined toolbar__item draw-button" id="toolbar-draw-button"
-        onclick="drawButtonActive(event)">
+        onclick="drawButtonClick(event)">
         edit
     </button>
     <button class="material-symbols-outlined toolbar__item" id="toolbar-eraser-button"
-        onclick="eraserButtonActive(event)">
+        onclick="eraserButtonClick(event)">
         ink_eraser
     </button>
-    <button class="material-symbols-outlined toolbar__item" onclick="moveButtonActive(event)">
+    <button class="material-symbols-outlined toolbar__item" onclick="moveButtonClick(event)">
         open_with
     </button>
     <input type="file" id="fileInput" style="display: none" accept="image/*">
@@ -100,24 +97,27 @@
         drag_click
     </button>
 </div>
-<div class="canvas-block">
+<div class="canvas-block" id="canvas-block">
     <div class="canvas-block-wrapper" id="canvas-block-wrapper"
         style="position: relative; height: calc({{ draft.height }}px + 0px); width: calc({{ draft.width }}px + 0px)">
         <!--Фон-->
         <canvas class="base-canvas canvas-block__item" id="base-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
         <!--Картинки-->
-        {% for picture in pictures %}
+        {% for picture in picture_objects %}
         <div id="picture_block-{{ forloop.counter }}" class="picture_block"
-            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px); width: {{ picture.picture.width }}px; height: {{ picture.picture.height }}px;">
+            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px); width: {{ picture.picture.width }}px; height: {{ picture.picture.height }}px;"
+            onmousedown="buttonElementMoveDown(event, 'picture_block-{{ forloop.counter }}')"
+            onmouseup="buttonElementMoveUp(event, 'picture_block-{{ forloop.counter }}')">
             <canvas style="position:absolute;" class="canvas-picture canvas-block__item"
                 id="canvas-{{ forloop.counter }}" width="{{ picture.picture.width }}"
                 height="{{ picture.picture.height }}">
             </canvas>
             <div id="buttons-{{ forloop.counter }}" class="picture_block_buttons"
-                style="width: {{ picture.picture.width }}px; height: {{ picture.picture.height }}px;"
-                onmouseover="hoverBlock({{ forloop.counter }})" onmouseout="unhoverBlock({{ forloop.counter }})">
-                <div class="picture_block__button-resize" onmousedown="buttonResizeDown({{ forloop.counter }}, event)">
+                onmouseover="hoverBlock('buttons-{{ forloop.counter }}')"
+                onmouseout="unhoverBlock('buttons-{{ forloop.counter }}')">
+                <div class="picture_block__button-resize"
+                    onmousedown="buttonResizeDown(event, 'picture_block-{{ forloop.counter }}')">
                 </div>
                 <div class="picture_block__button-rotate"></div>
             </div>
@@ -139,22 +139,32 @@
 <script src="{% static 'main/js/drawing.js' %}"></script>
 <script src="{% static 'main/js/draft_editor.js' %}"></script>
 <script>
-    var base_canvas = document.getElementById("base-canvas");
-    var base_context = editor_canvas.getContext("2d");
+    var x = []; // Координата Х по порядку идущего Picture Object
+    var y = []; // Координата Y по порядку идущего Picture Object
+    var id = []; // ID по порядку идущего Picture Object
+    var urls = []; // URL для о порядку идущего Picture Object
 
-    var urls = [];
-    var x = [];
-    var y = [];
-    var width = [];
-    var height = [];
-    var id = [];
-
-    function hello(id) {
-        console.log("123");
+    function dataInitialization() {
+        "{% for picture in picture_objects %}"
+        urls.push("{{picture.picture.url}}");
+        x.push("{{picture.x_position}}");
+        y.push("{{picture.y_position}}");
+        id.push("{{ picture.id }}");
+        "{% endfor %}"
     }
 
-    function draw_picture(id) {
-        // Функция для загрузки изображения по URL
+    function loadDrawnObject() {
+        var base_canvas = document.getElementById("base-canvas");
+        var base_context = editor_canvas.getContext("2d");
+
+        var img = new Image();
+        img.src = "{{ drawn_object.picture.url }}";
+        img.onload = function () {
+            base_context.drawImage(img, 0, 0);
+        };
+    }
+
+    function loadPictureObjects() {
         async function loadImage(url) {
             return new Promise((resolve, reject) => {
                 var img = new Image();
@@ -167,54 +177,31 @@
                 img.src = url;
             });
         }
-
-        // Функция для отрисовки изображений в заданной последовательности
         async function drawImagesSequentially() {
-            if (id == null) {
-                for (var i = 0; i < urls.length; i++) {
-                    var canvas_name = "canvas-" + (i + 1);
-                    try {
-                        var current_canvas = document.getElementById(canvas_name);
-                        var current_context = current_canvas.getContext("2d");
-                        const img = await loadImage(urls[i]);
-                        current_context.drawImage(img, 0, 0, img.width, img.height);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }
-            }
-            else {
-                var name = "picture_block-" + (id + 1);
+            for (var i = 0; i < urls.length; i++) {
+                var canvas_name = "canvas-" + (i + 1);
                 try {
-                    var current_canvas = document.getElementById(name);
-                    current_canvas.style = `position: absolute; transform: translate(${x[id]}px, ${y[id]}px);)`;
+                    var current_canvas = document.getElementById(canvas_name);
+                    var current_context = current_canvas.getContext("2d");
+                    const img = await loadImage(urls[i]);
+                    current_context.drawImage(img, 0, 0, img.width, img.height);
                 } catch (error) {
                     console.error(error);
                 }
             }
         }
-
-        // Вызываем функцию для отрисовки изображений
         drawImagesSequentially();
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        setBackground_non_websocket("{{ draft.background }}");
-        var img = new Image();
-        img.src = "{{ drawing.picture.url }}";
-        img.onload = function () {
-            base_context.drawImage(img, 0, 0);
-        };
-        "{% for picture in pictures %}"
-        urls.push("{{picture.picture.url}}");
-        x.push("{{picture.x_position}}");
-        y.push("{{picture.y_position}}");
-        id.push("{{ picture.id }}");
-        var canvas = document.getElementById("buttons-{{ forloop.counter }}");
-        canvas.addEventListener("mousedown", startMove);
-        "{% endfor %}"
-
-        draw_picture();
+        // Функция для корректной работы при перемещении элементов
+        document.addEventListener('dragstart', function (event) {
+            event.preventDefault();
+        });
+        loadBackground("{{ draft.background }}");
+        dataInitialization();
+        loadDrawnObject();
+        loadPictureObjects();
     });
 
     const socket = new WebSocket(`ws://${window.location.host}/ws/draft/{{ draft.id }}/`);

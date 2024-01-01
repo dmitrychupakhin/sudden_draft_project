@@ -3,7 +3,7 @@ var eraseButtonActivate = true;
 let pathCoordinates = [];
 
 //Алгоритм ластика
-function erase_button_click() {
+function loadErase() {
     if (eraseButtonActivate) {
         editor_canvas.addEventListener("mousedown", startErasing);
         editor_canvas.addEventListener("touchstart", startErasingTouch, { passive: false });

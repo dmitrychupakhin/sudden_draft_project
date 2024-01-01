@@ -2,7 +2,7 @@
 var active_now_button;
 
 //Функция для кастомного курсора
-function cursor_func() {
+function loadCustomCursor() {
     const container = document.querySelector('.canvas-block');
     const cursor = document.querySelector('.custom-cursor');
     var top_len;
@@ -29,12 +29,19 @@ function cursor_func() {
     });
 }
 
-//Кнопка Move активная
-function moveButtonActive(event) {
+function deactivateAllButtons() {
     drawButtonActivate = false;
-    draw_button_click();
+    loadDraw();
     eraseButtonActivate = false;
-    erase_button_click();
+    loadErase();
+    moveButtonActivate = false;
+    loadMove();
+}
+
+//Кнопка Move активная
+function moveButtonClick(event) {
+
+    deactivateAllButtons();
 
     var custom_cursor = document.getElementById("custom-cursor");
     custom_cursor.innerHTML = "";
@@ -47,17 +54,14 @@ function moveButtonActive(event) {
     active_now_button = button;
     moveButtonActivate = true;
 
-    cursor_func();
-    move_button_click();
+    loadCustomCursor();
+    loadMove();
 }
 
 //Кнопка Eraser активная
-function eraserButtonActive(event) {
+function eraserButtonClick(event) {
 
-    drawButtonActivate = false;
-    draw_button_click();
-    moveButtonActivate = false;
-    move_button_click();
+    deactivateAllButtons();
 
     var custom_cursor = document.getElementById("custom-cursor");
     custom_cursor.innerHTML = event.target.innerHTML;
@@ -69,17 +73,14 @@ function eraserButtonActive(event) {
     button.classList.add('active_button');
     active_now_button = button;
     eraseButtonActivate = true;
-    cursor_func();
-    erase_button_click();
+    loadCustomCursor();
+    loadErase();
 }
 
 //Кнопка Draw активная
-function drawButtonActive(event) {
+function drawButtonClick(event) {
 
-    eraseButtonActivate = false;
-    erase_button_click();
-    moveButtonActivate = false;
-    move_button_click();
+    deactivateAllButtons();
 
     var dropdown = document.getElementById("draw-settings");
 
@@ -92,15 +93,14 @@ function drawButtonActive(event) {
     }
 
     var button = event.target;
-
     if (active_now_button) {
         active_now_button.classList.remove('active_button');
     }
-
     button.classList.add('active_button');
     active_now_button = button;
     drawButtonActivate = true;
-    draw_button_click();
+    loadCustomCursor();
+    loadDraw();
 }
 
 //Добавление картинки
@@ -138,7 +138,7 @@ function handleFileSelect() {
 }
 
 //Изменить фон только у себя
-function setBackground_non_websocket(style) {
+function loadBackground(style) {
     if (style == "0") {
         drawGridstyle0("base-canvas", 20);
     }

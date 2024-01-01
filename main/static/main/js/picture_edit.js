@@ -1,25 +1,26 @@
 
+var isButtonResizeDown = false;
+var startResizeX, startResizeY, scrollLeftResize, scrollTopResize;
+var currentDivId = null;
 
-function hoverBlock(id) {
-    var element = document.getElementById(`buttons-${id}`);
-    var buttons = document.getElementById(`buttons-${id}`);
+
+
+function hoverBlock(divId) {
+    var element = document.getElementById(divId);
     element.style.boxShadow = "0px 0px 0px 5px rgb(134, 188, 250)";
-    buttons.style.opacity = "1";
+    element.style.opacity = "1";
 }
 
-function unhoverBlock(id) {
-    var element = document.getElementById(`buttons-${id}`);
-    var buttons = document.getElementById(`buttons-${id}`);
+function unhoverBlock(divId) {
+    var element = document.getElementById(divId);
     element.style.boxShadow = "0px 0px 0px 0px rgb(0, 0, 0)";
-    buttons.style.opacity = "0";
+    element.style.opacity = "0";
 }
 
-var isButtonDown2 = false;
-var startX1, startY1, scrollLeft1, scrollTop1;
-var currentId;
-function buttonResizeDown(id, e) {
-    currentId = id;
-    isButtonDown2 = true;
+function buttonResizeDown(e, divId) {
+    e.stopPropagation();
+    currentDivId = divId;
+    isButtonResizeDown = true;
     container.style.cursor = "none";
     container.removeEventListener("mousedown", startMove);
     container.removeEventListener("mousemove", move);
@@ -28,19 +29,19 @@ function buttonResizeDown(id, e) {
     container.addEventListener("mousemove", buttonResizeMove);
     container.addEventListener("mouseup", buttonResizeUp);
 }
+
 function buttonResizeMove(e) {
-    if (isButtonDown2) {
+    e.stopPropagation();
+    if (isButtonResizeDown) {
         var rect = editor_canvas.getBoundingClientRect();
 
-        var element = document.getElementById(`picture_block-${currentId}`);
-
-        console.log(element.offsetWidth);
-        console.log(element.offsetHeight);
+        var element = document.getElementById(currentDivId);
 
         var originalWidth = element.offsetWidth;
         var originalHeight = element.offsetHeight;
 
-        var newWidth = e.clientX - x[currentId - 1] - rect.left;
+        var rectElement = document.getElementById("canvas-block-wrapper");
+        var newWidth = e.clientX - element.getBoundingClientRect().x;
 
         // Рассчитываем коэффициент пропорций
         var aspectRatio = originalWidth / originalHeight;
@@ -51,16 +52,10 @@ function buttonResizeMove(e) {
         element.style.width = newWidth + 'px';
         element.style.height = newHeight + 'px';
 
-        var canvasElement = document.getElementById(`canvas-${currentId}`);
-        canvasElement.style.width = newWidth + 'px';
-        canvasElement.style.height = newHeight + 'px';
-
-        var buttonsElement = document.getElementById(`buttons-${currentId}`);
-        buttonsElement.style.width = newWidth + 'px';
-        buttonsElement.style.height = newHeight + 'px';
     }
 }
-function buttonResizeUp() {
+function buttonResizeUp(e) {
+    e.stopPropagation();
     isMouseDown2 = false;
     container.removeEventListener("mousemove", buttonResizeMove);
     container.removeEventListener("mouseup", buttonResizeUp);
@@ -70,4 +65,45 @@ function buttonResizeUp() {
     container.addEventListener("mousedown", startMove);
     container.addEventListener("mousemove", move);
     container.addEventListener("mouseup", stopMove);
+}
+
+var isButtonElementMoveDown = false;
+
+function buttonElementMoveDown(e, divId) {
+    e.stopPropagation();
+    var element = document.getElementById(divId);
+    container.style.cursor = "grabbing";
+    var rectElement = document.getElementById("canvas-block-wrapper");
+    startX = e.clientX + rectElement.getBoundingClientRect().left;
+    startY = e.clientY + rectElement.getBoundingClientRect().top;
+    console.log(element.getBoundingClientRect());
+    console.log(rectElement.getBoundingClientRect());
+    scrollLeft = startX - element.getBoundingClientRect().left - rectElement.getBoundingClientRect().left;
+    scrollTop = startY - element.getBoundingClientRect().top - rectElement.getBoundingClientRect().top;
+    isButtonElementMoveDown = true;
+    element.addEventListener("mousemove", buttonElementMoveMove);
+    currentDivId = divId;
+}
+
+function buttonElementMoveMove(e) {
+    e.stopPropagation();
+    var element = document.getElementById(currentDivId);
+    var rectElement = document.getElementById("canvas-block-wrapper");
+    element.style.transform = `translate(${e.clientX - rectElement.getBoundingClientRect().left - scrollLeft}px, ${e.clientY - rectElement.getBoundingClientRect().top - scrollTop}px)`;
+}
+
+function buttonElementMoveUp(e, divId) {
+    var element = document.getElementById(divId);
+    element.removeEventListener("mousemove", buttonElementMoveMove);
+    /*
+    if (isButtonElementMoveDown) {
+        var data = {
+            type: 'picture_pisition_change',
+            id: id[isPictureMove],
+            x_position: x[isPictureMove],
+            y_position: y[isPictureMove]
+        };
+        socket.send(JSON.stringify(data));
+    }
+    */
 }

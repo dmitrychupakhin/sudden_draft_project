@@ -235,6 +235,11 @@ body {
 }
 
 .canvas-picture {
+    width: 100%;
+    height: 100%;
+}
+
+.picture_block{
     box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -271,6 +276,8 @@ body {
 }
 
 .picture_block_buttons{
+    width: 100%;
+    height: 100%;
     transition: box-shadow 0.5s ease;
     transition: opacity 0.5s ease;
     position: relative;

@@ -7,7 +7,7 @@ var editor_canvas = document.getElementById("editor-canvas");
 var editor_context = editor_canvas.getContext("2d");
 
 //Изменяем тип ручки
-function set_draw_style1(event) {
+function setDrawStyle1(event) {
     if (event) {
         //Изменяем иконку ручки
         var button = event.target;
@@ -26,10 +26,10 @@ function set_draw_style1(event) {
     lineWidth = 2;
     editor_context.lineWidth = 2;
     style = 1;
-    cursor_func();
+    loadCustomCursor();
 }
 
-function set_draw_style2(event) {
+function setDrawStyle2(event) {
     if (event) {
         var button = event.target;
         var draw_button = document.getElementById("toolbar-draw-button");
@@ -51,10 +51,10 @@ function set_draw_style2(event) {
     lineWidth = 4;
     editor_context.lineWidth = 4;
     style = 2;
-    cursor_func();
+    loadCustomCursor();
 }
 
-function set_draw_style3(event) {
+function setDrawStyle3(event) {
     if (event) {
         var button = event.target;
         var draw_button = document.getElementById("toolbar-draw-button");
@@ -76,10 +76,10 @@ function set_draw_style3(event) {
     lineWidth = 15;
     editor_context.lineWidth = 15;
     style = 3;
-    cursor_func();
+    loadCustomCursor();
 }
 
-function set_draw_style4(event) {
+function setDrawStyle4(event) {
     if (event) {
         var button = event.target;
         var draw_button = document.getElementById("toolbar-draw-button");
@@ -101,11 +101,11 @@ function set_draw_style4(event) {
     lineWidth = 30;
     editor_context.lineWidth = 30;
     style = 4;
-    cursor_func();
+    loadCustomCursor();
 }
 
 //Изменяем цвет ручки
-function set_draw_color(event) {
+function setDrawColor(event) {
     var button = event.target;
     var computedStyle = window.getComputedStyle(button);
     var backgroundColor = computedStyle.backgroundColor;
@@ -118,16 +118,16 @@ function set_draw_color(event) {
 
     // Далее ваш код для установки стиля рисования в зависимости от переменной style
     if (style === 1) {
-        set_draw_style1();
+        setDrawStyle1();
     }
     else if (style === 2) {
-        set_draw_style2();
+        setDrawStyle2();
     }
     else if (style === 3) {
-        set_draw_style3();
+        setDrawStyle3();
     }
     else if (style === 4) {
-        set_draw_style4();
+        setDrawStyle4();
     }
 }
 
@@ -135,7 +135,7 @@ function set_draw_color(event) {
 var isDrawing = false;
 var drawButtonActivate = false;
 
-function draw_button_click() {
+function loadDraw() {
     editor_context.lineWidth = lineWidth;
     editor_context.strokeStyle = color;
     var alpha = 1;

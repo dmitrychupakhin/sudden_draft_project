@@ -39,13 +39,13 @@ def draft_editor(request, id):
         drawing = draft.drawn_object
         context = {
             'draft': draft,
-            'pictures': pictures,
-            'drawing': drawing,
+            'picture_objects': pictures,
+            'drawn_object': drawing,
         }
     except:
         context = {
             'draft': draft,
-            'pictures': pictures,
+            'picture_objects': pictures,
         }
     context['MEDIA_URL'] = settings.MEDIA_URL
     return render(request, 'main/draft_editor.html', context)
