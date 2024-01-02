@@ -104,27 +104,28 @@
         <canvas class="base-canvas canvas-block__item" id="base-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
         <!--Картинки-->
-        {% for picture in picture_objects %}
-        <div id="picture_block-{{ forloop.counter }}" class="picture_block"
-            style=" position:absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px); width: {{ picture.picture.width }}px; height: {{ picture.picture.height }}px;"
-            onmousedown="buttonElementMoveDown(event, 'picture_block-{{ forloop.counter }}')"
-            onmouseup="buttonElementMoveUp(event, 'picture_block-{{ forloop.counter }}')">
-            <canvas style="position:absolute;" class="canvas-picture canvas-block__item"
-                id="canvas-{{ forloop.counter }}" width="{{ picture.picture.width }}"
-                height="{{ picture.picture.height }}">
-            </canvas>
-            <div id="buttons-{{ forloop.counter }}" class="picture_block_buttons"
-                onmouseover="hoverBlock('buttons-{{ forloop.counter }}')"
-                onmouseout="unhoverBlock('buttons-{{ forloop.counter }}')">
-                <div class="picture_block__button-resize"
-                    onmousedown="buttonResizeDown(event, 'picture_block-{{ forloop.counter }}')">
-                </div>
-                <div class="picture_block__button-rotate" id="picture_block__button-rotate-{{ forloop.counter }}"
-                    onmousedown="buttonRotateDown(event, 'picture_block-{{ forloop.counter }}', 'picture_block__button-rotate-{{ forloop.counter }}')">
+        <div id="picture_blocks">
+            {% for picture in picture_objects %}
+            <div id="picture_block-{{ picture.id }}" class="picture_block"
+                style="position: absolute; transform: translate({{ picture.x_position }}px, {{ picture.y_position }}px) rotate({{ picture.rotate }}deg); width: {{ picture.width }}px; height: {{ picture.height }}px;"
+                onmousedown="buttonElementMoveDown(event, 'picture_block-{{ picture.id }}')">
+                <canvas style="position:absolute;" class="canvas-picture canvas-block__item"
+                    id="canvas-{{ picture.id }}" width="{{ picture.width }}" height="{{ picture.height }}">
+                </canvas>
+                <div id="buttons-{{ picture.id }}" class="picture_block_buttons"
+                    onmouseover="hoverBlock('buttons-{{ picture.id }}')"
+                    onmouseout="unhoverBlock('buttons-{{ picture.id }}')">
+                    <div class="picture_block__button-resize"
+                        onmousedown="buttonResizeDown(event, 'picture_block-{{ picture.id }}')">
+                    </div>
+                    <div class="picture_block__button-rotate" id="picture_block__button-rotate-{{ picture.id }}"
+                        onmousedown="buttonRotateDown(event, 'picture_block-{{ picture.id }}', 'picture_block__button-rotate-{{ picture.id }}')">
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+
         <!--Рисунки-->
         <canvas class=" editor-canvas canvas-block__item" id="editor-canvas" width="{{ draft.width }}"
             height="{{ draft.height }}"></canvas>
@@ -140,19 +141,6 @@
 <script src="{% static 'main/js/drawing.js' %}"></script>
 <script src="{% static 'main/js/draft_editor.js' %}"></script>
 <script>
-    var x = []; // Координата Х по порядку идущего Picture Object
-    var y = []; // Координата Y по порядку идущего Picture Object
-    var id = []; // ID по порядку идущего Picture Object
-    var urls = []; // URL для о порядку идущего Picture Object
-
-    function dataInitialization() {
-        "{% for picture in picture_objects %}"
-        urls.push("{{picture.picture.url}}");
-        x.push("{{picture.x_position}}");
-        y.push("{{picture.y_position}}");
-        id.push("{{ picture.id }}");
-        "{% endfor %}"
-    }
 
     function loadDrawnObject() {
         var base_canvas = document.getElementById("base-canvas");
@@ -166,6 +154,10 @@
     }
 
     function loadPictureObjects() {
+        var urls = []; // URL для о порядку идущего Picture Object
+        var width = [];
+        var height = [];
+
         async function loadImage(url) {
             return new Promise((resolve, reject) => {
                 var img = new Image();
@@ -179,19 +171,93 @@
             });
         }
         async function drawImagesSequentially() {
-            for (var i = 0; i < urls.length; i++) {
-                var canvas_name = "canvas-" + (i + 1);
-                try {
-                    var current_canvas = document.getElementById(canvas_name);
-                    var current_context = current_canvas.getContext("2d");
-                    const img = await loadImage(urls[i]);
-                    current_context.drawImage(img, 0, 0, img.width, img.height);
-                } catch (error) {
-                    console.error(error);
-                }
+            "{% for picture in picture_objects %}"
+            width.push("{{picture.width}}");
+            height.push("{{picture.height}}");
+            urls.push("{{picture.picture.url}}");
+            "{% endfor %}"
+            var parentDiv = document.getElementById('canvas-block-wrapper');
+            var childDivs = parentDiv.querySelectorAll('.picture_block');
+            for (var i = 0; i < childDivs.length; i++) {
+                var canvasElement = childDivs[i].querySelector('canvas');
+                var current_context = canvasElement.getContext("2d");
+                const img = await loadImage(urls[i]);
+                current_context.drawImage(img, 0, 0, width[i], height[i]);
             }
         }
         drawImagesSequentially();
+    }
+
+    function createPictureBlock(picture) {
+        // Создаем элемент div
+        var pictureBlock = document.createElement('div');
+
+        // Устанавливаем id и класс
+        pictureBlock.id = 'picture_block-' + picture.id;
+        pictureBlock.className = 'picture_block';
+
+        // Устанавливаем стили
+        pictureBlock.style.position = 'absolute';
+        pictureBlock.style.transform = 'translate(' + picture.x_position + 'px, ' + picture.y_position + 'px) rotate(' + picture.rotate + 'deg)';
+        pictureBlock.style.width = picture.width + 'px';
+        pictureBlock.style.height = picture.height + 'px';
+
+        // Устанавливаем обработчик события mousedown
+        pictureBlock.onmousedown = function (event) {
+            buttonElementMoveDown(event, 'picture_block-' + picture.id);
+        };
+
+        // Создаем элемент canvas
+        var canvas = document.createElement('canvas');
+        canvas.style.position = 'absolute';
+        canvas.className = 'canvas-picture canvas-block__item';
+        canvas.id = 'canvas-' + picture.id;
+        canvas.width = picture.width;
+        canvas.height = picture.height;
+
+        var img = new Image();
+        img.src = picture.img;
+        var current_context = canvas.getContext("2d");
+        current_context.drawImage(img, 0, 0, img.width, img.height);
+
+        // Создаем блок с кнопками
+        var buttonsBlock = document.createElement('div');
+        buttonsBlock.id = 'buttons-' + picture.id;
+        buttonsBlock.className = 'picture_block_buttons';
+
+        // Устанавливаем обработчики событий mouseover и mouseout для блока с кнопками
+        buttonsBlock.onmouseover = function () {
+            hoverBlock('buttons-' + picture.id);
+        };
+        buttonsBlock.onmouseout = function () {
+            unhoverBlock('buttons-' + picture.id);
+        };
+
+        // Создаем кнопку изменения размера
+        var resizeButton = document.createElement('div');
+        resizeButton.className = 'picture_block__button-resize';
+        resizeButton.onmousedown = function (event) {
+            buttonResizeDown(event, 'picture_block-' + picture.id);
+        };
+
+        // Создаем кнопку вращения
+        var rotateButton = document.createElement('div');
+        rotateButton.className = 'picture_block__button-rotate';
+        rotateButton.id = 'picture_block__button-rotate-' + picture.id;
+        rotateButton.onmousedown = function (event) {
+            buttonRotateDown(event, 'picture_block-' + picture.id, 'picture_block__button-rotate-' + picture.id);
+        };
+
+        // Добавляем элементы в блок с кнопками
+        buttonsBlock.appendChild(resizeButton);
+        buttonsBlock.appendChild(rotateButton);
+
+        // Добавляем элементы в основной блок
+        pictureBlock.appendChild(canvas);
+        pictureBlock.appendChild(buttonsBlock);
+
+        // Возвращаем созданный блок
+        return pictureBlock;
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -200,7 +266,6 @@
             event.preventDefault();
         });
         loadBackground("{{ draft.background }}");
-        dataInitialization();
         loadDrawnObject();
         loadPictureObjects();
     });
@@ -217,43 +282,97 @@
 
         var parse_data = JSON.parse(event.data);
 
-        const background_style = parse_data.background_style;
-        const receivedCoordinates = parse_data.coordinates;
+        switch (parse_data.type) {
+            case 'draw_data':
+                var x_position = parse_data.x_position;
+                var y_position = parse_data.y_position;
+                var picture_url = parse_data.picture_url;
 
-        if (background_style) {
-            //Если пришло событие для фона
-            setBackground_non_websocket(background_style);
-        }
-        else if (receivedCoordinates) {
-            //Если пришло событие для ластика
-            for (let i = 0; i < receivedCoordinates.length; i++) {
-                const coordinate = receivedCoordinates[i];
-                editor_context.clearRect(coordinate.x, coordinate.y, 15, 15);
-            }
-            var save_draw_image = editor_canvas.toDataURL('image/png');
-            var data = {
-                type: 'draw_picture_save',
-                save_draw_image: save_draw_image,
-            };
-            socket.send(JSON.stringify(data));
-        } else {
-            //Если пришло событие для обновления draw picture
-            var x_position = parse_data.x_position;
-            var y_position = parse_data.y_position;
-            var picture_url = parse_data.picture_url;
+                var img = new Image();
+                img.src = picture_url;
+                img.onload = function () {
+                    editor_context.drawImage(img, x_position, y_position);
 
-            var img = new Image();
-            img.src = picture_url;
-            img.onload = function () {
-                editor_context.drawImage(img, x_position, y_position);
-
+                    var save_draw_image = editor_canvas.toDataURL('image/png');
+                    var data = {
+                        type: 'draw_picture_save',
+                        save_draw_image: save_draw_image,
+                    };
+                    socket.send(JSON.stringify(data));
+                };
+                break;
+            case 'erase_data':
+                const receivedCoordinates = parse_data.coordinates;
+                for (let i = 0; i < receivedCoordinates.length; i++) {
+                    const coordinate = receivedCoordinates[i];
+                    editor_context.clearRect(coordinate.x, coordinate.y, 15, 15);
+                }
                 var save_draw_image = editor_canvas.toDataURL('image/png');
                 var data = {
                     type: 'draw_picture_save',
                     save_draw_image: save_draw_image,
                 };
                 socket.send(JSON.stringify(data));
-            };
+            case 'background_style_data':
+                const background_style = parse_data.background_style;
+                loadBackground(background_style);
+            case 'image_upload_data':
+                var img = new Image();
+                img.onload = function () {
+                    var pictureData = {
+                        id: parse_data.id,
+                        x_position: 0,
+                        y_position: 0,
+                        rotate: 0,
+                        width: img.width,
+                        height: img.height,
+                        img: parse_data.img
+                    };
+                    var parentDiv = document.getElementById('picture_blocks');
+                    var createdBlock = createPictureBlock(pictureData);
+                    parentDiv.appendChild(createdBlock);
+
+                    // Ваш дополнительный код, который должен выполняться после загрузки изображения
+                };
+                img.src = parse_data.img;
+                break;
+            case 'picture_position_change_data':
+                var id = 'picture_block-' + parse_data.id;
+                var element = document.getElementById(id);
+                var styles = window.getComputedStyle(element);
+                var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
+
+                // Получаем угол поворота в радианах
+                var rotateAngle = Math.atan2(matrix.b, matrix.a);
+
+                // Преобразуем угол в градусы
+                var rotateAngleDegrees = (rotateAngle * 180) / Math.PI;
+
+                // Устанавливаем новое положение и поворот элемента
+                element.style.transform = `translate(${parse_data.x}px, ${parse_data.y}px) rotate(${rotateAngleDegrees}deg)`;
+
+                break;
+            case 'picture_size_change_data':
+
+                var id = 'picture_block-' + parse_data.id;
+
+                var element = document.getElementById(id);
+                console.log(element);
+                element.style.width = parse_data.width + "px";
+                element.style.height = parse_data.height + "px";
+                console.log(element);
+
+                break;
+            case 'picture_rotate_change_data':
+                var id = 'picture_block-' + parse_data.id;
+                var element = document.getElementById(id);
+                var styles = window.getComputedStyle(element);
+                var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
+
+                // Устанавливаем новое положение и поворот элемента
+                element.style.transform = `translate(${matrix.m41}px, ${matrix.m42}px) rotate(${parse_data.rotate}deg)`;
+
+                break;
         }
     }
 

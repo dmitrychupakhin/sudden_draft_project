@@ -51,8 +51,8 @@ function buttonRotateMove(e) {
         var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
 
         // Получаем координаты центра элемента
-        var centerX = matrix.m41 + element.offsetWidth / 2 + 100;
-        var centerY = matrix.m42 + element.offsetHeight / 2 + 100;
+        var centerX = matrix.m41 + element.offsetWidth / 2;
+        var centerY = matrix.m42 + element.offsetHeight / 2;
 
         // Получаем угол между текущим положением курсора и центром элемента
         var angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
@@ -63,8 +63,7 @@ function buttonRotateMove(e) {
 
         angle = angle - startAngle;
 
-        console.log(angle);
-        console.log(startAngle);
+
         // Применяем вращение
         element.style.transform = 'translate(' + matrix.m41 + 'px, ' + matrix.m42 + 'px) rotate(' + angle + 'rad)';
     }
@@ -81,6 +80,27 @@ function buttonRotateUp(e) {
     container.addEventListener("mousedown", startMove);
     container.addEventListener("mousemove", move);
     container.addEventListener("mouseup", stopMove);
+
+    var element = document.getElementById(currentDivId);
+    var styles = window.getComputedStyle(element);
+    var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
+
+    // Получаем угол поворота в радианах
+    var rotateAngle = Math.atan2(matrix.b, matrix.a);
+
+    // Преобразуем угол в градусы
+    var rotateAngleDegrees = (rotateAngle * 180) / Math.PI;
+
+    if (parseBeforeId(currentDivId) === "picture_block") {
+        var element = document.getElementById(currentDivId);
+
+        var data = {
+            type: 'picture_rotate_change',
+            id: parseAndConvertId(currentDivId),
+            rotate: rotateAngleDegrees
+        };
+        socket.send(JSON.stringify(data));
+    }
 }
 
 function buttonResizeDown(e, divId) {
@@ -131,6 +151,19 @@ function buttonResizeUp(e) {
     container.addEventListener("mousedown", startMove);
     container.addEventListener("mousemove", move);
     container.addEventListener("mouseup", stopMove);
+
+    var element = document.getElementById(currentDivId);
+    if (parseBeforeId(currentDivId) === "picture_block") {
+        var element = document.getElementById(currentDivId);
+
+        var data = {
+            type: 'picture_size_change',
+            id: parseAndConvertId(currentDivId),
+            width: parseInt(element.style.width),
+            height: parseInt(element.style.height)
+        };
+        socket.send(JSON.stringify(data));
+    }
 }
 
 var isButtonElementMoveDown = false;
@@ -142,34 +175,84 @@ function buttonElementMoveDown(e, divId) {
     var rectElement = document.getElementById("canvas-block-wrapper");
     startX = e.clientX + rectElement.getBoundingClientRect().left;
     startY = e.clientY + rectElement.getBoundingClientRect().top;
-    console.log(element.getBoundingClientRect());
-    console.log(rectElement.getBoundingClientRect());
     scrollLeft = startX - element.getBoundingClientRect().left - rectElement.getBoundingClientRect().left;
     scrollTop = startY - element.getBoundingClientRect().top - rectElement.getBoundingClientRect().top;
     isButtonElementMoveDown = true;
     container.addEventListener("mousemove", buttonElementMoveMove);
+    container.addEventListener("mouseup", buttonElementMoveUp);
     currentDivId = divId;
 }
 
 function buttonElementMoveMove(e) {
     e.stopPropagation();
     var element = document.getElementById(currentDivId);
+    var styles = window.getComputedStyle(element);
+    var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
+
+    // Получаем угол поворота в радианах
+    var rotateAngle = Math.atan2(matrix.b, matrix.a);
+
+    // Преобразуем угол в градусы
+    var rotateAngleDegrees = (rotateAngle * 180) / Math.PI;
+
     var rectElement = document.getElementById("canvas-block-wrapper");
-    element.style.transform = `translate(${e.clientX - rectElement.getBoundingClientRect().left - scrollLeft}px, ${e.clientY - rectElement.getBoundingClientRect().top - scrollTop}px)`;
+
+    // Рассчитываем новое положение элемента
+    var offsetX = e.clientX - rectElement.getBoundingClientRect().left - scrollLeft;
+    var offsetY = e.clientY - rectElement.getBoundingClientRect().top - scrollTop;
+
+    // Устанавливаем новое положение и поворот элемента
+    element.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotateAngleDegrees}deg)`;
 }
 
-function buttonElementMoveUp(e, divId) {
-    var element = document.getElementById(divId);
+function parseAndConvertId(id) {
+    // Используем регулярное выражение для извлечения числа y
+    const match = id.match(/\d+$/);
+
+    if (match) {
+        // Извлекаем число и преобразуем его в целое число
+        const yValue = parseInt(match[0], 10);
+
+        // Возвращаем целое число
+        return yValue;
+    } else {
+        // Возвращаем null или другое значение по умолчанию, если не удалось извлечь число
+        return null;
+    }
+}
+
+function parseBeforeId(id) {
+    const match = id.match(/^([^-]+)-\d+/);
+
+    if (match) {
+        // Извлекаем все символы до числа y
+        const result = match[1];
+
+        // Возвращаем результат
+        return result;
+    } else {
+        // Возвращаем null или другое значение по умолчанию, если не удалось извлечь
+        return null;
+    }
+}
+
+function buttonElementMoveUp(e) {
+    var element = document.getElementById(currentDivId);
     container.removeEventListener("mousemove", buttonElementMoveMove);
-    /*
-    if (isButtonElementMoveDown) {
+    container.removeEventListener("mouseup", buttonElementMoveUp);
+    if (parseBeforeId(currentDivId) === "picture_block") {
+        var element = document.getElementById(currentDivId);
+
+        // Получаем текущие трансформации
+        var styles = window.getComputedStyle(element);
+        var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
+
         var data = {
-            type: 'picture_pisition_change',
-            id: id[isPictureMove],
-            x_position: x[isPictureMove],
-            y_position: y[isPictureMove]
+            type: 'picture_position_change',
+            id: parseAndConvertId(currentDivId),
+            x_position: matrix.m41,
+            y_position: matrix.m42
         };
         socket.send(JSON.stringify(data));
     }
-    */
 }

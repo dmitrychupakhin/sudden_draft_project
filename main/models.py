@@ -64,6 +64,9 @@ class PictureObject(models.Model):
     order = models.PositiveIntegerField(default=0, null=False)
     draft =  models.ForeignKey(Draft, related_name='picture_object', on_delete=models.CASCADE)
     picture = models.ImageField(upload_to=get_picture_object_filepath, null=True)
+    height = models.IntegerField()
+    width = models.IntegerField()
+    rotate = models.IntegerField()
     
 
 class TextObject(models.Model):

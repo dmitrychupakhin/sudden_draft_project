@@ -26,7 +26,6 @@ function startErasing(e) {
     var rect = editor_canvas.getBoundingClientRect();
     pathCoordinates.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
 
-    editor_context.clearRect(e.clientX - rect.left, e.clientY - rect.top, 15, 15);
 }
 
 function erase(e) {
@@ -34,7 +33,7 @@ function erase(e) {
         var rect = editor_canvas.getBoundingClientRect();
         pathCoordinates.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
 
-        editor_context.clearRect(e.clientX - rect.left, e.clientY - rect.top, 30, 30);
+        //editor_context.clearRect(e.clientX - rect.left, e.clientY - rect.top, 30, 30);
     }
 }
 
