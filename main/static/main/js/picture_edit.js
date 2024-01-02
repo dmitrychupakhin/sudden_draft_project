@@ -3,7 +3,7 @@ var isButtonResizeDown = false;
 var startResizeX, startResizeY, scrollLeftResize, scrollTopResize;
 var currentDivId = null;
 
-
+var currentButtonRotateDivId = null;
 
 function hoverBlock(divId) {
     var element = document.getElementById(divId);
@@ -15,6 +15,72 @@ function unhoverBlock(divId) {
     var element = document.getElementById(divId);
     element.style.boxShadow = "0px 0px 0px 0px rgb(0, 0, 0)";
     element.style.opacity = "0";
+}
+
+var Xstart;
+var Ystart;
+
+function buttonRotateDown(e, divId, buttonDivId) {
+    e.stopPropagation();
+    startAngle = null;
+    Xstart = e.clientX;
+    Ystart = e.clientY;
+
+    currentDivId = divId;
+    currentButtonRotateDivId = buttonDivId;
+    isButtonResizeDown = true;
+    container.style.cursor = "none";
+    container.removeEventListener("mousedown", startMove);
+    container.removeEventListener("mousemove", move);
+    container.removeEventListener("mouseup", stopMove);
+
+    container.addEventListener("mousemove", buttonRotateMove);
+    container.addEventListener("mouseup", buttonRotateUp);
+}
+
+var startAngle = null;
+
+function buttonRotateMove(e) {
+    e.stopPropagation();
+    container.style.cursor = "nesw-resize";
+    if (isButtonResizeDown) {
+        var element = document.getElementById(currentDivId);
+
+        // Получаем текущие трансформации
+        var styles = window.getComputedStyle(element);
+        var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
+
+        // Получаем координаты центра элемента
+        var centerX = matrix.m41 + element.offsetWidth / 2 + 100;
+        var centerY = matrix.m42 + element.offsetHeight / 2 + 100;
+
+        // Получаем угол между текущим положением курсора и центром элемента
+        var angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+
+        if (startAngle == null) {
+            startAngle = angle;
+        }
+
+        angle = angle - startAngle;
+
+        console.log(angle);
+        console.log(startAngle);
+        // Применяем вращение
+        element.style.transform = 'translate(' + matrix.m41 + 'px, ' + matrix.m42 + 'px) rotate(' + angle + 'rad)';
+    }
+}
+function buttonRotateUp(e) {
+    e.stopPropagation();
+    startAngle = null;
+    isMouseDown2 = false;
+    container.removeEventListener("mousemove", buttonRotateMove);
+    container.removeEventListener("mouseup", buttonRotateUp);
+
+    container.style.cursor = "grab";
+    isMouseDown = false;
+    container.addEventListener("mousedown", startMove);
+    container.addEventListener("mousemove", move);
+    container.addEventListener("mouseup", stopMove);
 }
 
 function buttonResizeDown(e, divId) {
@@ -81,7 +147,7 @@ function buttonElementMoveDown(e, divId) {
     scrollLeft = startX - element.getBoundingClientRect().left - rectElement.getBoundingClientRect().left;
     scrollTop = startY - element.getBoundingClientRect().top - rectElement.getBoundingClientRect().top;
     isButtonElementMoveDown = true;
-    element.addEventListener("mousemove", buttonElementMoveMove);
+    container.addEventListener("mousemove", buttonElementMoveMove);
     currentDivId = divId;
 }
 
@@ -94,7 +160,7 @@ function buttonElementMoveMove(e) {
 
 function buttonElementMoveUp(e, divId) {
     var element = document.getElementById(divId);
-    element.removeEventListener("mousemove", buttonElementMoveMove);
+    container.removeEventListener("mousemove", buttonElementMoveMove);
     /*
     if (isButtonElementMoveDown) {
         var data = {

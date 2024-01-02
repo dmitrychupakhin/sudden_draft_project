@@ -119,7 +119,9 @@
                 <div class="picture_block__button-resize"
                     onmousedown="buttonResizeDown(event, 'picture_block-{{ forloop.counter }}')">
                 </div>
-                <div class="picture_block__button-rotate"></div>
+                <div class="picture_block__button-rotate" id="picture_block__button-rotate-{{ forloop.counter }}"
+                    onmousedown="buttonRotateDown(event, 'picture_block-{{ forloop.counter }}', 'picture_block__button-rotate-{{ forloop.counter }}')">
+                </div>
             </div>
         </div>
         {% endfor %}
@@ -133,7 +135,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
 
 <script src="{% static 'main/js/picture_edit.js' %}"></script>
-<script src="{% static 'main/js/draft_editor_load.js' %}"></script>
 <script src="{% static 'main/js/moving.js' %}"></script>
 <script src="{% static 'main/js/erasing.js' %}"></script>
 <script src="{% static 'main/js/drawing.js' %}"></script>

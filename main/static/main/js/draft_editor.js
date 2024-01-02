@@ -105,12 +105,7 @@ function drawButtonClick(event) {
 
 //Добавление картинки
 function newPictureObject(event) {
-    eraseButtonActivate = false;
-    erase_button_click();
-    moveButtonActivate = false;
-    move_button_click();
-    drawButtonActivate = false;
-    draw_button_click();
+    deactivateAllButtons();
 
     var fileInput = document.getElementById('fileInput');
     fileInput.click();
