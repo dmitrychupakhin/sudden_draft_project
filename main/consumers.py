@@ -8,6 +8,7 @@ from .models import *
 from PIL import Image
 import base64
 from io import BytesIO
+from .forms import *
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -178,7 +179,38 @@ class ChatConsumer(WebsocketConsumer):
                     'rotate': rotate
                 }
             )
+        elif message_type == 'new_text_array':
+            draft = Draft.objects.get(id=self.draft_id)
+        
+            text_object = TextObject.objects.create(
+                x_position = data.get('x'),
+                y_position = data.get('y'),
+                draft=draft,  
+            )
+            text_object.save()
             
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'new_text_form.data',
+                    'id': text_object.id,
+                    'x': data.get('x'),
+                    'y': data.get('y'),
+                }
+            )
+            
+    
+    def new_text_form_data(self, event):
+        id = event['id']
+        x = event['x']
+        y = event['y']
+        self.send(text_data=json.dumps({
+            'type': 'new_text_form_data',
+            'id': id,
+            'x': x,
+            'y': y,
+        }))
+         
     def erase_data(self, event):
         coordinates = event['coordinates']
         self.send(text_data=json.dumps({
@@ -246,3 +278,5 @@ class ChatConsumer(WebsocketConsumer):
             'width': width,
             'height': height,
         }))
+    
+    

@@ -36,6 +36,26 @@ function deactivateAllButtons() {
     loadErase();
     moveButtonActivate = false;
     loadMove();
+    textButtonActivate = false;
+    loadText();
+}
+
+function textButtonClick(event) {
+    deactivateAllButtons();
+
+    var custom_cursor = document.getElementById("custom-cursor");
+    custom_cursor.innerHTML = "";
+
+    if (active_now_button) {
+        active_now_button.classList.remove('active_button');
+    }
+    var button = event.target;
+    button.classList.add('active_button');
+    active_now_button = button;
+    textButtonActivate = true;
+
+    loadCustomCursor();
+    loadText();
 }
 
 //Кнопка Move активная

@@ -14,3 +14,8 @@ class NewDraftForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Название'}),
             'is_public': forms.CheckboxInput,
         }
+
+class TextEditorForm(forms.ModelForm):
+    class Meta:
+        model = TextObject
+        fields = ('content',)

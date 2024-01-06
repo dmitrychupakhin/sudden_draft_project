@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import models
 from operator import attrgetter
 from account.models import SuddenDraftUser
+from ckeditor.fields import RichTextField
 
 class Draft(models.Model):
     name = models.CharField(max_length=100)
@@ -71,10 +72,15 @@ class PictureObject(models.Model):
 
 class TextObject(models.Model):
     content = models.TextField()
-    x_position = models.IntegerField()
-    y_position = models.IntegerField()
+    x_position = models.IntegerField(default=0)
+    y_position = models.IntegerField(default=0)
+    height = models.IntegerField(default=50)
+    width = models.IntegerField(default=250)
     order = models.PositiveIntegerField(default=0, null=False)
     draft =  models.ForeignKey(Draft, related_name='text_object', on_delete=models.CASCADE)
+    content = RichTextField(blank=True, null=True)
+
+   
 
 class DrawnObject(models.Model):
     draft =  models.OneToOneField(Draft, related_name='drawn_object', on_delete=models.CASCADE)

@@ -39,6 +39,7 @@ function buttonRotateDown(e, divId, buttonDivId) {
 }
 
 var startAngle = null;
+var rotateAngle = 0;
 
 function buttonRotateMove(e) {
     e.stopPropagation();
@@ -50,19 +51,23 @@ function buttonRotateMove(e) {
         var styles = window.getComputedStyle(element);
         var matrix = new DOMMatrix(styles.getPropertyValue('transform'));
 
+        var rect_element = document.getElementById("canvas-block-wrapper");
         // Получаем координаты центра элемента
-        var centerX = matrix.m41 + element.offsetWidth / 2;
-        var centerY = matrix.m42 + element.offsetHeight / 2;
+        var rect = element.getBoundingClientRect();
+        var centerX = rect.x + element.offsetWidth / 2;
+        var centerY = rect.y + element.offsetHeight / 2;
+        //var centerX = matrix.m41 + element.offsetWidth / 2;
+        //var centerY = matrix.m42 + element.offsetHeight / 2;
 
         // Получаем угол между текущим положением курсора и центром элемента
         var angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
 
         if (startAngle == null) {
             startAngle = angle;
+            rotateAngle = Math.atan2(matrix.b, matrix.a);
         }
 
-        angle = angle - startAngle;
-
+        angle = rotateAngle + (angle - startAngle);
 
         // Применяем вращение
         element.style.transform = 'translate(' + matrix.m41 + 'px, ' + matrix.m42 + 'px) rotate(' + angle + 'rad)';
@@ -103,7 +108,7 @@ function buttonRotateUp(e) {
     }
 }
 
-function buttonResizeDown(e, divId) {
+function buttonResizeDown(e, divId, isProportions) {
     e.stopPropagation();
     currentDivId = divId;
     isButtonResizeDown = true;
@@ -112,11 +117,31 @@ function buttonResizeDown(e, divId) {
     container.removeEventListener("mousemove", move);
     container.removeEventListener("mouseup", stopMove);
 
-    container.addEventListener("mousemove", buttonResizeMove);
+    if (isProportions) {
+        container.addEventListener("mousemove", buttonResizeProportionsMove);
+    }
+    else {
+        container.addEventListener("mousemove", buttonResizeNoProportionsMove);
+    }
+
     container.addEventListener("mouseup", buttonResizeUp);
 }
 
-function buttonResizeMove(e) {
+function buttonResizeNoProportionsMove(e) {
+    e.stopPropagation();
+    if (isButtonResizeDown) {
+        var element = document.getElementById(currentDivId);
+
+        var newWidth = e.clientX - element.getBoundingClientRect().x;
+        var newHeight = e.clientY - element.getBoundingClientRect().y;
+
+        element.style.width = newWidth + 'px';
+        element.style.height = newHeight + 'px';
+
+    }
+}
+
+function buttonResizeProportionsMove(e) {
     e.stopPropagation();
     if (isButtonResizeDown) {
         var rect = editor_canvas.getBoundingClientRect();
@@ -143,7 +168,8 @@ function buttonResizeMove(e) {
 function buttonResizeUp(e) {
     e.stopPropagation();
     isMouseDown2 = false;
-    container.removeEventListener("mousemove", buttonResizeMove);
+    container.removeEventListener("mousemove", buttonResizeNoProportionsMove);
+    container.removeEventListener("mousemove", buttonResizeProportionsMove);
     container.removeEventListener("mouseup", buttonResizeUp);
 
     container.style.cursor = "grab";

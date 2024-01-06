@@ -33,19 +33,36 @@ def new_draft(request):
     return render(request, 'main/new_draft.html', context)
 
 def draft_editor(request, id):
-    draft = get_object_or_404(Draft, id=id)
-    pictures = draft.get_pictures()
-    try:
-        drawing = draft.drawn_object
+    if request.method == 'GET':
+        draft = get_object_or_404(Draft, id=id)
+        pictures = draft.get_pictures()
+        text_object = TextObject.objects.create(
+            x_position = 2,
+            y_position = 4,
+            draft=draft,
+        )
+        try:
+            drawing = draft.drawn_object
+            context = {
+                'draft': draft,
+                'picture_objects': pictures,
+                'drawn_object': drawing,
+                'text': TextEditorForm(instance=text_object)
+            }
+        except:
+            context = {
+                'draft': draft,
+                'picture_objects': pictures,
+                'text': TextEditorForm(instance=text_object)
+            }   
+        context['MEDIA_URL'] = settings.MEDIA_URL
+        return render(request, 'main/draft_editor.html', context)
+    else:
+        print(request.POST)
+        user = request.user
+        drafts = Draft.objects.filter(users=user)
         context = {
-            'draft': draft,
-            'picture_objects': pictures,
-            'drawn_object': drawing,
+            'MEDIA_URL': settings.MEDIA_URL,
+            'drafts': drafts
         }
-    except:
-        context = {
-            'draft': draft,
-            'picture_objects': pictures,
-        }
-    context['MEDIA_URL'] = settings.MEDIA_URL
-    return render(request, 'main/draft_editor.html', context)
+        return render(request, 'main/main.html',context)

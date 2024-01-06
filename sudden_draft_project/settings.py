@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'ckeditor',
+    'corsheaders',
     'daphne',
     'channels',
     'account',
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -121,7 +124,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATICFILES_DIRS = [
@@ -142,3 +144,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/account/login/'
 
 AUTH_USER_MODEL = 'account.SuddenDraftUser'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",  # Разрешенный origin (ваш локальный сервер)
+    "https://cke4.ckeditor.com",  # Разрешенный origin (CKEditor CDN)
+]
